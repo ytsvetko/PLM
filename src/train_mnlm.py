@@ -7,6 +7,8 @@ from sklearn.datasets import fetch_mldata
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import f1_score
 import random 
+import json
+import os
 
 import mnlm 
 
@@ -22,6 +24,7 @@ parser.add_argument('--out_vectors', default="/usr0/home/ytsvetko/projects/pnn/w
 parser.add_argument('--out_softmax_vectors', default="/usr0/home/ytsvetko/projects/pnn/work/softmax_vectors.en")
 parser.add_argument('--out_network', default="/usr0/home/ytsvetko/projects/pnn/work")
 parser.add_argument('--in_network', default="/usr0/home/ytsvetko/projects/pnn/work")
+parser.add_argument('--symbol_table', default="/usr0/home/ytsvetko/projects/pnn/work/symbol_table")
 
 args = parser.parse_args()
 
@@ -32,6 +35,14 @@ class SymbolTable(object):
   def __init__(self):
     self.word_to_index = {}
     self.index_to_word = []
+
+  def LoadFromFile(self, filename):
+    self.index_to_word = json.load(open(filename, 'r'))
+    for i, word in enumerate(self.index_to_word):
+      self.word_to_index[word] = i
+      
+  def SaveToFile(self, filename):
+    json.dump(self.index_to_word, open(filename, 'w'))
 
   def WordIndex(self, word):
     if word not in self.word_to_index:
@@ -75,8 +86,10 @@ def SaveVectors(symbol_table, vector_matrix, filename):
     vector = [str(num) for num in vector]
     out_f.write(u"{} {}\n".format(symbol_table.IndexToWord(i), " ".join(vector)))
 
-def main(): 
+def main():
   symbol_table = SymbolTable()
+  if os.path.exists(args.symbol_table):
+    symbol_table.LoadFromFile(args.symbol_table)
   x, y, lang_feat, vocab_size = None, None, None, 0
   for lang in args.lang_list.split():
     print "Language:", lang
@@ -116,6 +129,8 @@ def main():
   if args.out_softmax_vectors:
     softmax_vectors = network.SoftmaxVectors(train_x, train_y, train_lang_feat)
     SaveVectors(symbol_table, softmax_vectors, args.out_softmax_vectors)
+  if args.symbol_table:
+    symbol_table.SaveToFile(args.symbol_table)
 
 if __name__ == '__main__':
     main()
