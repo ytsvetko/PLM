@@ -19,8 +19,8 @@ import learning_method
 rng = numpy.random.RandomState(2016)
 
 class MNLM(object):
-  def __init__(self, vectors, vector_size, context_size, ling_feat_size, out_dim):
-    self.vectors = vectors  # Key: word; Value: current vectors
+  def __init__(self, vocab_size, vector_size, context_size, ling_feat_size, out_dim):
+    self.vectors = numpy.zeros([vocab_size, vector_size])  # Current vectors
     self.layers = [
                 layer.LBL_Biased(context_size*vector_size, vector_size, ling_feat_size, 
                                  ling_activation=T.nnet.sigmoid),
@@ -95,22 +95,25 @@ class MNLM(object):
         softmax_sums[phone_index].Update(prob_matrix[i])
 
       # Calculate the average for each 'y' and convert y indexes into phones.
-      phone_softmax = {}
-      for i, phone in enumerate(sorted(self.vectors.keys())):
-        phone_softmax[phone] = softmax_sums[i].Mean()
+      phone_softmax = []
+      for i in xrange(self.vectors.shape[0]):
+        phone_softmax.append(softmax_sums[i].Mean())
       return phone_softmax
 
     softmax_probs = theano.function(inputs=[self.x, self.lang_bias], outputs=self.prob_fn)
     prob_matrix = softmax_probs(self.NgramToVector_(x), ling_feat)
     return CollectSoftmaxVectors(prob_matrix)
+  
+  def Predict(self, ngram, ling_feat):
+    pass
 
   def NgramToVector_(self, train_x):
     def flatten(l):
       return [item for sublist in l for item in sublist]
     def ngram_to_vectors(ngram):
       result = []
-      for word in ngram:
-        result.append(self.vectors[word])
+      for word_ind in ngram:
+        result.append(self.vectors[word_ind])
       return flatten(result)
     vec_train_x = []
     for ngram in train_x:
@@ -150,9 +153,8 @@ class MNLM(object):
     # R-- weight matrix from embedding layer
     # update VECTORS with learned weights
     R = self.layers[2].W.get_value()
-    assert len(self.vectors.keys()) == R.shape[0], (len(self.vectors.keys()), R.shape[0])
-    for row, word in enumerate(sorted(self.vectors.keys())):
-      self.vectors[word] = R[row]
+    assert self.vectors.shape == R.shape, (self.vectors.shape, R.shape)
+    self.vectors = R
 
 if __name__ == "__main__":
   print "This is a library!"

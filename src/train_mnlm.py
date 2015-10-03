@@ -56,10 +56,11 @@ def LoadData(corpus, vectors, ngram_order):
   # out format: for each n-gram, x: n-1 embeddings appended; y: n's word 1-hot representation
   x = []
   y = []
-  len_one_hot = len(vectors.keys())
   word_ind = {}
+  reverse_vocab = []
   for i, word in enumerate(sorted(vectors.keys())):
     word_ind[word] = i
+    reverse_vocab.append(word)
 
   def one_hot(word):
     return word_ind[word]
@@ -73,21 +74,21 @@ def LoadData(corpus, vectors, ngram_order):
         yield ngram
        
   for ngram in next_ngram(corpus):
-    x.append(ngram[:-1])
+    x.append([one_hot(word) for word in ngram[:-1]])
     y.append(one_hot(ngram[-1]))
       
-  return x, y, word_ind
+  return x, y, word_ind, reverse_vocab
 
 def LoadLingFeatVector(filename, num_samples):
   x = codecs.open(filename, "r", "utf-8").readlines()
   x = numpy.array([x]).astype("float32")
   return numpy.repeat(x, num_samples, 0)
 
-def SaveVectors(vectors, filename):
+def SaveVectors(word_at_index, vectors, filename):
   out_f = codecs.open(filename, "w", "utf-8")
-  for word, vector in sorted(vectors.items()):
+  for i, vector in enumerate(vectors):
     vector = [str(num) for num in vector]
-    out_f.write(u"{} {}\n".format(word, " ".join(vector)))
+    out_f.write(u"{} {}\n".format(word_at_index[i], " ".join(vector)))
 
 def main(): 
   vectors, vector_size = LoadVectors(args.vectors, init_random=True)
@@ -97,7 +98,7 @@ def main():
     corpus = args.corpus_path + lang
     ling_feat_vector = args.ling_vector_path + lang
 
-    x_lang, y_lang, one_hot_mapping = LoadData(corpus, vectors, args.ngram_order)
+    x_lang, y_lang, one_hot_mapping, word_at_index = LoadData(corpus, vectors, args.ngram_order)
     ling_feat_lang = LoadLingFeatVector(ling_feat_vector, len(x_lang))
 
     if x is None: 
@@ -107,13 +108,12 @@ def main():
       y = numpy.concatenate((y, y_lang), axis=0)
       ling_feat = numpy.concatenate((ling_feat, ling_feat_lang), axis=0)
 
-  
   train_x, dev_x, train_y, dev_y, train_ling_feat, dev_ling_feat = train_test_split(
       x, y, ling_feat, test_size=0.2, random_state=2016) 
   batch_size = 50
   epochs =  50
 
-  network = mnlm.MNLM(vectors, vector_size, args.ngram_order-1,
+  network = mnlm.MNLM(len(vectors), vector_size, args.ngram_order-1,
                       ling_feat.shape[1], len(one_hot_mapping.keys()))
   if args.in_network:
     network.LoadModel(args.in_network)
@@ -127,10 +127,10 @@ def main():
   if args.out_network:
     network.SaveModel(args.out_network)
   if args.out_vectors:
-    SaveVectors(network.vectors, args.out_vectors)
+    SaveVectors(word_at_index, network.vectors, args.out_vectors)
   if args.out_softmax_vectors:
     softmax_vectors = network.SoftmaxVectors(train_x, train_y, train_ling_feat)
-    SaveVectors(softmax_vectors, args.out_softmax_vectors)
+    SaveVectors(word_at_index, softmax_vectors, args.out_softmax_vectors)
 
 if __name__ == '__main__':
     main()
