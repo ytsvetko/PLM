@@ -30,18 +30,18 @@ class Linear:
         return h
 
 class LBL_Biased:
-    def __init__(self, vis_dim, hid_dim, ling_dim, ling_activation=None, scale=0.08):
+    def __init__(self, vis_dim, hid_dim, lang_dim, lang_activation=None, scale=0.08):
         self.W = sharedX(rng.randn(vis_dim, hid_dim) * scale)
-        self.V = sharedX(rng.randn(ling_dim, hid_dim) * scale)
+        self.V = sharedX(rng.randn(lang_dim, hid_dim) * scale)
         self.b = sharedX(rng.randn(hid_dim,) * scale)
         self.params = [ self.W, self.V, self.b ]
-        self.ling_activation = ling_activation
+        self.lang_activation = lang_activation
 
-    def fprop(self, x, ling_dim):
-        if self.ling_activation:
-          h = T.dot(x, self.W)+self.ling_activation(T.dot(ling_dim, self.V)+self.b)
+    def fprop(self, x, lang_dim):
+        if self.lang_activation:
+          h = T.dot(x, self.W)+self.lang_activation(T.dot(lang_dim, self.V)+self.b)
         else:
-          h = T.dot(x, self.W)+T.dot(ling_dim, self.V)+self.b
+          h = T.dot(x, self.W)+T.dot(lang_dim, self.V)+self.b
         return h
 
 class RNN:

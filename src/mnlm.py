@@ -19,13 +19,13 @@ import learning_method
 rng = numpy.random.RandomState(2016)
 
 class MNLM(object):
-  def __init__(self, vocab_size, vector_size, context_size, ling_feat_size, out_dim):
+  def __init__(self, vocab_size, vector_size, context_size, lang_feat_size):
     self.vectors = numpy.zeros([vocab_size, vector_size])  # Current vectors
     self.layers = [
-                layer.LBL_Biased(context_size*vector_size, vector_size, ling_feat_size, 
-                                 ling_activation=T.nnet.sigmoid),
+                layer.LBL_Biased(context_size*vector_size, vector_size, lang_feat_size, 
+                                 lang_activation=T.nnet.sigmoid),
                 layer.Activation(T.tanh),
-                layer.Linear(vector_size, out_dim, scale=0.08), 
+                layer.Linear(vector_size, vocab_size, scale=0.08), 
                 layer.Activation(T.nnet.softmax),
             ]
 
@@ -39,10 +39,11 @@ class MNLM(object):
 
     ## Collect Parameters
     self.params = self.GetParams_()
-   
+
+    self.softmax_probs = theano.function(inputs=[self.x, self.lang_bias], outputs=self.prob_fn)
     self.test = theano.function(inputs=[self.x, self.t, self.lang_bias], outputs=self.cost_fn)    
 
-  def TrainEpoch(self, train_x, train_y, train_ling_feat, batch_size, lr=0.01):
+  def TrainEpoch(self, train_x, train_y, train_lang_feat, batch_size, lr=0.01):
     ## Define update graph
     updates = learning_method.sgd(self.cost_fn, self.params, lr=lr) 
 
@@ -55,13 +56,13 @@ class MNLM(object):
       batch_size = train_x.shape[0]
     nbatches = train_x.shape[0]//batch_size
     # Shuffle samples
-    train_x, train_y, train_ling_feat = shuffle(train_x, train_y, train_ling_feat)
+    train_x, train_y, train_lang_feat = shuffle(train_x, train_y, train_lang_feat)
     train_costs = []
     for i in range(nbatches):
       start = i * batch_size
       end = start + batch_size
       vec_train_x = self.NgramToVector_(train_x[start:end]) 
-      cost = train(vec_train_x, train_y[start:end], train_ling_feat[start:end])
+      cost = train(vec_train_x, train_y[start:end], train_lang_feat[start:end])
       train_costs.append(cost)
       self.UpdateVectors_()
       if i % 1000 == 0:
@@ -70,12 +71,12 @@ class MNLM(object):
     train_ppl = numpy.power(2.0, train_logp)
     return train_logp, train_ppl
 
-  def Test(self, x, y, ling_feat):
-    test_cost = self.test(self.NgramToVector_(x), y, ling_feat)
+  def Test(self, x, y, lang_feat):
+    test_cost = self.test(self.NgramToVector_(x), y, lang_feat)
     test_ppl = numpy.power(2.0, test_cost)
     return test_cost, test_ppl
 
-  def SoftmaxVectors(self, x, y, ling_feat):
+  def SoftmaxVectors(self, x, y, lang_feat):
     # Helper function for averaging softmax predictions for each value of 'y'
     def CollectSoftmaxVectors(prob_matrix):
       class VectorMean(object):
@@ -100,12 +101,13 @@ class MNLM(object):
         phone_softmax.append(softmax_sums[i].Mean())
       return phone_softmax
 
-    softmax_probs = theano.function(inputs=[self.x, self.lang_bias], outputs=self.prob_fn)
-    prob_matrix = softmax_probs(self.NgramToVector_(x), ling_feat)
+    prob_matrix = self.softmax_probs(self.NgramToVector_(x), lang_feat)
     return CollectSoftmaxVectors(prob_matrix)
   
-  def Predict(self, ngram, ling_feat):
-    pass
+  def Predict(self, ngram, lang_feat):
+    prob_matrix = self.softmax_probs(self.NgramToVector_([ngram]), lang_feat)
+    assert prob_matrix.shape[0] == 1, prob_matrix.shape
+    return numpy.argmax(prob_matrix, axis=1)[0]
 
   def NgramToVector_(self, train_x):
     def flatten(l):
@@ -152,7 +154,7 @@ class MNLM(object):
   def UpdateVectors_(self):
     # R-- weight matrix from embedding layer
     # update VECTORS with learned weights
-    R = self.layers[2].W.get_value()
+    R = self.layers[2].W.get_value().transpose()
     assert self.vectors.shape == R.shape, (self.vectors.shape, R.shape)
     self.vectors = R
 
