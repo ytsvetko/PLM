@@ -15,7 +15,7 @@ import mnlm
 random.seed(2016)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lang_list', nargs='+', default="en")
+parser.add_argument('--lang_list', default="en")
 parser.add_argument('--corpus_path', default="/usr0/home/ytsvetko/projects/pnn/data/pron/pron-corpus.")
 parser.add_argument('--lang_vector_path', default="/usr0/home/ytsvetko/projects/pnn/data/wals/feat.")
 parser.add_argument('--vector_size', type=int, default=70)
