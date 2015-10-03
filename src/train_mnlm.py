@@ -9,7 +9,6 @@ from sklearn.metrics import f1_score
 import random 
 
 import mnlm 
-import utils 
 
 random.seed(2016)
 
@@ -99,7 +98,7 @@ def main():
     ling_feat_vector = args.ling_vector_path + lang
 
     x_lang, y_lang, one_hot_mapping = LoadData(corpus, vectors, args.ngram_order)
-    ling_feat_lang = LoadLingFeatVector(ling_feat_vector, len(x_lang)) 
+    ling_feat_lang = LoadLingFeatVector(ling_feat_vector, len(x_lang))
 
     if x is None: 
       x, y, ling_feat = numpy.array(x_lang), numpy.array(y_lang), numpy.array(ling_feat_lang)
@@ -109,23 +108,29 @@ def main():
       ling_feat = numpy.concatenate((ling_feat, ling_feat_lang), axis=0)
 
   
-  train_x, dev_x, train_y, dev_y, train_ling_feat, dev_ling_feat  = train_test_split(x, y, ling_feat, test_size=0.2, random_state=2016) 
+  train_x, dev_x, train_y, dev_y, train_ling_feat, dev_ling_feat = train_test_split(
+      x, y, ling_feat, test_size=0.2, random_state=2016) 
   batch_size = 50
   epochs =  50
 
-  vectors, network, softmax_vectors = mnlm.TrainMNLM(train_x, dev_x, train_y, dev_y, train_ling_feat, dev_ling_feat, 
-                 vectors, vector_size, args.ngram_order-1, len(one_hot_mapping.keys()), batch_size, epochs,
-                 args.in_network)
-
-  SaveVectors(vectors, args.out_vectors)
-  SaveVectors(softmax_vectors, args.out_softmax_vectors)
-
-
-  setup = "Languages: "+args.lang_list+", batch size:"+str(batch_size)+", epochs:"+str(epochs)
-  utils.Dump(network, setup, args.out_network)
+  network = mnlm.MNLM(vectors, vector_size, args.ngram_order-1,
+                      ling_feat.shape[1], len(one_hot_mapping.keys()))
+  if args.in_network:
+    network.LoadModel(args.in_network)
+  print "Training"
+  for epoch in xrange(epochs):
+    train_logp, train_ppl = network.TrainEpoch(train_x, train_y, train_ling_feat, batch_size, lr=0.01)
+    print "Epoch:", epoch+1
+    print "Train cost mean:", train_logp, "perplexity:", train_ppl
+    dev_logp, dev_ppl = network.Test(dev_x, dev_y, dev_ling_feat)
+    print "Dev cost mean:", dev_logp, "perplexity:", dev_ppl
+  if args.out_network:
+    network.SaveModel(args.out_network)
+  if args.out_vectors:
+    SaveVectors(network.vectors, args.out_vectors)
+  if args.out_softmax_vectors:
+    softmax_vectors = network.SoftmaxVectors(train_x, train_y, train_ling_feat)
+    SaveVectors(softmax_vectors, args.out_softmax_vectors)
 
 if __name__ == '__main__':
     main()
-    
-    
-    
