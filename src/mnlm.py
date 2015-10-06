@@ -9,14 +9,14 @@ import cPickle
 import numpy
 import theano
 import theano.tensor as T
-from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 from sklearn.utils import shuffle
 import collections
+import random 
+
+random.seed(1234)
 
 import layer
 import learning_method
-
-rng = numpy.random.RandomState(2016)
 
 class MNLM(object):
   def __init__(self, vocab_size, vector_size, context_size, lang_feat_size):
@@ -108,7 +108,18 @@ class MNLM(object):
     prob_matrix = self.softmax_probs(self.NgramToVector_([ngram]), lang_feat)
     assert prob_matrix.shape[0] == 1, prob_matrix.shape
     return numpy.argmax(prob_matrix, axis=1)[0]
-
+    
+  def PredictStochastic(self, ngram, lang_feat):
+    prob_matrix = self.softmax_probs(self.NgramToVector_([ngram]), lang_feat)
+    assert prob_matrix.shape[0] == 1, prob_matrix.shape
+    cumulative_prob = 0
+    rand_ind = random.random()
+    for ind, prob in enumerate(prob_matrix[0]):
+      cumulative_prob += prob
+      if rand_ind < cumulative_prob:
+        return ind
+    return numpy.argmax(prob_matrix, axis=1)[0]
+    
   def NgramToVector_(self, train_x):
     def flatten(l):
       return [item for sublist in l for item in sublist]

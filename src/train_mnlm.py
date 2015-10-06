@@ -3,16 +3,16 @@
 import argparse
 import codecs
 import numpy
+import os
 from sklearn.datasets import fetch_mldata
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import f1_score
-import random 
-import os
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 import mnlm 
 import symbol_table as st
 
-random.seed(2016)
+rng = numpy.random.RandomState(2016)
 
 lang_list = "en_ru_fr_ro"
 parser = argparse.ArgumentParser()

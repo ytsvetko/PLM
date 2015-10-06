@@ -7,13 +7,10 @@ import numpy
 from sklearn.datasets import fetch_mldata
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import f1_score
-import random 
 import os
 
 import mnlm 
 import symbol_table as st
-
-random.seed(2016)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--lang_vector_path', default="/usr0/home/ytsvetko/projects/pnn/data/wals/feat.")
@@ -36,7 +33,7 @@ def Generate(ngram_prefix, lang_feat, network, symbol_table, context_size, max_g
   str_ngram = [start_symbol]*context_size + ngram_prefix
   int_ngram = [symbol_table.WordIndex(w) for w in str_ngram]
   for iter_num in xrange(max_generated_len):
-    int_next_symbol = network.Predict(int_ngram[-context_size:], lang_feat)
+    int_next_symbol = network.PredictStochastic(int_ngram[-context_size:], lang_feat)
     int_ngram.append(int_next_symbol)
     str_next_symbol = symbol_table.IndexToWord(int_next_symbol)
     str_ngram.append(str_next_symbol)
@@ -45,7 +42,7 @@ def Generate(ngram_prefix, lang_feat, network, symbol_table, context_size, max_g
   return str_ngram[context_size:-1]
   
 def main():
-  lang = "ru"
+  lang = "en"
   word = u't e l'
   symbol_table = st.SymbolTable()
   symbol_table.LoadFromFile(args.symbol_table)
