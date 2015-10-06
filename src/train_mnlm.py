@@ -93,6 +93,8 @@ def main():
   if args.load_network:
     network.LoadModel(args.network_dir)
   print "Training"
+  prev_train_ppl = 100
+  prev_dev_ppl = 100
   try:
     for epoch in xrange(args.num_epochs):
       train_logp, train_ppl = network.TrainEpoch(train_x, train_y, train_lang_feat, args.batch_size, lr=0.01)
@@ -100,6 +102,9 @@ def main():
       print "Train cost mean:", train_logp, "perplexity:", train_ppl
       dev_logp, dev_ppl = network.Test(dev_x, dev_y, dev_lang_feat)
       print "Dev cost mean:", dev_logp, "perplexity:", dev_ppl
+      if (dev_ppl - prev_dev_ppl) > 0.1 or abs(dev_ppl - train_ppl) < 0.001:
+        # stop training if dev perplexity is growing or when train ppl equals dev ppl
+        break
   except KeyboardInterrupt:
     print "Aborted. Saving to file."
   if args.save_network:
