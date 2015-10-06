@@ -11,9 +11,10 @@ import theano
 import theano.tensor as T
 from sklearn.utils import shuffle
 import collections
+import heapq
 import random 
 
-random.seed(1234)
+#random.seed(1234)
 
 import layer
 import learning_method
@@ -104,11 +105,15 @@ class MNLM(object):
     prob_matrix = self.softmax_probs(self.NgramToVector_(x), lang_feat)
     return CollectSoftmaxVectors(prob_matrix)
   
-  def Predict(self, ngram, lang_feat):
+  def Predict(self, ngram, lang_feat, n_best=1):
     prob_matrix = self.softmax_probs(self.NgramToVector_([ngram]), lang_feat)
     assert prob_matrix.shape[0] == 1, prob_matrix.shape
-    return numpy.argmax(prob_matrix, axis=1)[0]
-    
+    if n_best == 1:
+      return numpy.argmax(prob_matrix, axis=1)[0]
+    else:
+      prob_matrix = prob_matrix[0]
+      return heapq.nlargest(n_best, range(len(prob_matrix)), prob_matrix.take)[-1]
+      
   def PredictStochastic(self, ngram, lang_feat):
     prob_matrix = self.softmax_probs(self.NgramToVector_([ngram]), lang_feat)
     assert prob_matrix.shape[0] == 1, prob_matrix.shape
