@@ -2,8 +2,8 @@
 
 import argparse
 import codecs
-import numpy
 import os
+import numpy
 from sklearn.datasets import fetch_mldata
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import f1_score
@@ -14,22 +14,20 @@ import symbol_table as st
 
 rng = numpy.random.RandomState(2016)
 
-lang_list = "en_ru_fr_ro"
 parser = argparse.ArgumentParser()
 parser.add_argument('--lang_list', default="en_ru_fr_ro")
-parser.add_argument('--corpus_path', default="/usr0/home/ytsvetko/projects/pnn/data/pron/pron-corpus.")
-parser.add_argument('--lang_vector_path', default="/usr0/home/ytsvetko/projects/pnn/data/wals/feat.")
+parser.add_argument('--corpus_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-corpus.")
+parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--vector_size', type=int, default=70)
 parser.add_argument('--ngram_order', type=int, default=4)
 parser.add_argument('--batch_size', type=int, default=40)
-parser.add_argument('--num_epochs', type=int, default=40)
-parser.add_argument('--out_vectors', default="/usr0/home/ytsvetko/projects/pnn/work/"+lang_list+"/vectors")
-parser.add_argument('--out_softmax_vectors', default="/usr0/home/ytsvetko/projects/pnn/work/"+lang_list+"/softmax_vectors")
-parser.add_argument('--out_network', default="/usr0/home/ytsvetko/projects/pnn/work/"+lang_list)
-parser.add_argument('--in_network', default="")
-parser.add_argument('--symbol_table', default="/usr0/home/ytsvetko/projects/pnn/work/"+lang_list+"/symbol_table")
-
-
+parser.add_argument('--num_epochs', type=int, default=30)
+parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work")
+parser.add_argument('--out_vectors', default="vectors")
+parser.add_argument('--out_softmax_vectors', default="softmax_vectors")
+parser.add_argument('--load_network', action='store_true', default=False)
+parser.add_argument('--save_network', action='store_true', default=False)
+parser.add_argument('--symbol_table', default="symbol_table")
 args = parser.parse_args()
 
 start_symbol = "<s>"
@@ -68,8 +66,9 @@ def SaveVectors(symbol_table, vector_matrix, filename):
 
 def main():
   symbol_table = st.SymbolTable()
-  if os.path.exists(args.symbol_table):
-    symbol_table.LoadFromFile(args.symbol_table)
+  symbol_table_path = os.path.join(args.network_dir, args.lang_list, args.symbol_table)
+  if os.path.exists(symbol_table_path):
+    symbol_table.LoadFromFile(symbol_table_path)
   x, y, lang_feat, vocab_size = None, None, None, 0
   for lang in args.lang_list.split("_"):
     print "Language:", lang
@@ -91,8 +90,8 @@ def main():
 
   network = mnlm.MNLM(symbol_table.Size(), args.vector_size, args.ngram_order-1,
                       lang_feat.shape[1])
-  if args.in_network:
-    network.LoadModel(args.in_network)
+  if args.load_network:
+    network.LoadModel(args.network_dir)
   print "Training"
   try:
     for epoch in xrange(args.num_epochs):
@@ -103,15 +102,17 @@ def main():
       print "Dev cost mean:", dev_logp, "perplexity:", dev_ppl
   except KeyboardInterrupt:
     print "Aborted. Saving to file."
-  if args.out_network:
-    network.SaveModel(args.out_network)
+  if args.save_network:
+    network.SaveModel(args.network_dir)
   if args.out_vectors:
-    SaveVectors(symbol_table, network.vectors, args.out_vectors)
+    out_vectors_path = os.path.join(args.network_dir, args.lang_list, args.out_vectors)
+    SaveVectors(symbol_table, network.vectors, out_vectors_path)
   if args.out_softmax_vectors:
+    out_softmax_vectors_path = os.path.join(args.network_dir, args.lang_list, args.out_softmax_vectors)
     softmax_vectors = network.SoftmaxVectors(train_x, train_y, train_lang_feat)
-    SaveVectors(symbol_table, softmax_vectors, args.out_softmax_vectors)
+    SaveVectors(symbol_table, softmax_vectors, out_softmax_vectors_path)
   if args.symbol_table:
-    symbol_table.SaveToFile(args.symbol_table)
+    symbol_table.SaveToFile(symbol_table_path)
 
 if __name__ == '__main__':
     main()
