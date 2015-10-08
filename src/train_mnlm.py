@@ -15,13 +15,13 @@ import symbol_table as st
 rng = numpy.random.RandomState(2016)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lang_list', default="en_ru_fr_ro")
+parser.add_argument('--lang_list', default="en_ru_fr_ro_it_mt")
 parser.add_argument('--corpus_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-corpus.")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--vector_size', type=int, default=70)
-parser.add_argument('--ngram_order', type=int, default=4)
-parser.add_argument('--batch_size', type=int, default=40)
-parser.add_argument('--num_epochs', type=int, default=30)
+parser.add_argument('--ngram_order', type=int, default=5)
+parser.add_argument('--batch_size', type=int, default=100)
+parser.add_argument('--num_epochs', type=int, default=50)
 parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work")
 parser.add_argument('--out_vectors', default="vectors")
 parser.add_argument('--out_softmax_vectors', default="softmax_vectors")
@@ -65,6 +65,11 @@ def SaveVectors(symbol_table, vector_matrix, filename):
     out_f.write(u"{} {}\n".format(symbol_table.IndexToWord(i), " ".join(vector)))
 
 def main():
+  try:
+    os.stat(os.path.join(args.network_dir, args.lang_list))
+  except:
+    os.mkdir(os.path.join(args.network_dir, args.lang_list))
+    
   symbol_table = st.SymbolTable()
   symbol_table_path = os.path.join(args.network_dir, args.lang_list, args.symbol_table)
   if os.path.exists(symbol_table_path):
@@ -102,20 +107,23 @@ def main():
       print "Train cost mean:", train_logp, "perplexity:", train_ppl
       dev_logp, dev_ppl = network.Test(dev_x, dev_y, dev_lang_feat)
       print "Dev cost mean:", dev_logp, "perplexity:", dev_ppl
-      if (dev_ppl - prev_dev_ppl) > 0.1 or abs(dev_ppl - train_ppl) < 0.001:
+      if (dev_ppl - prev_dev_ppl) > 0.1 or abs(dev_ppl - train_ppl) < 0.0001:
         # stop training if dev perplexity is growing or when train ppl equals dev ppl
         break
+  
+      os.mkdir(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
+      if args.save_network:
+        network.SaveModel(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
+      if args.out_vectors:
+        out_vectors_path = os.path.join(args.network_dir, args.lang_list, str(epoch+1), args.out_vectors)
+        SaveVectors(symbol_table, network.vectors, out_vectors_path)
+ 
   except KeyboardInterrupt:
     print "Aborted. Saving to file."
-  if args.save_network:
-    network.SaveModel(args.network_dir)
-  if args.out_vectors:
-    out_vectors_path = os.path.join(args.network_dir, args.lang_list, args.out_vectors)
-    SaveVectors(symbol_table, network.vectors, out_vectors_path)
-  if args.out_softmax_vectors:
-    out_softmax_vectors_path = os.path.join(args.network_dir, args.lang_list, args.out_softmax_vectors)
-    softmax_vectors = network.SoftmaxVectors(train_x, train_y, train_lang_feat)
-    SaveVectors(symbol_table, softmax_vectors, out_softmax_vectors_path)
+  #if args.out_softmax_vectors:
+  #  out_softmax_vectors_path = os.path.join(args.network_dir, args.lang_list, args.out_softmax_vectors)
+  #  softmax_vectors = network.SoftmaxVectors(train_x, train_y, train_lang_feat)
+  #  SaveVectors(symbol_table, softmax_vectors, out_softmax_vectors_path)
   if args.symbol_table:
     symbol_table.SaveToFile(symbol_table_path)
 

@@ -16,12 +16,12 @@ import symbol_table as st
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--lang', default="en")
-parser.add_argument('--corpus_path', default="/usr0/home/ytsvetko/projects/pnn/data/pron/pron-corpus.")
-parser.add_argument('--lang_vector_path', default="/usr0/home/ytsvetko/projects/pnn/data/wals/feat.")
+parser.add_argument('--corpus_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-corpus.")
+parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--vector_size', type=int, default=70)
 parser.add_argument('--ngram_order', type=int, default=4)
 
-parser.add_argument('--network_dir', default="/usr0/home/ytsvetko/projects/pnn/work/en_ru")
+parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/en_ru")
 parser.add_argument('--vectors', default="vectors")
 parser.add_argument('--softmax_vectors', default="softmax_vectors")
 parser.add_argument('--symbol_table', default="symbol_table")
