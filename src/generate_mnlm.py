@@ -81,7 +81,17 @@ def Generate(ngram_prefix, lang_feat, network, symbol_table,
     str_ngram.append(str_next_symbol)
     int_ngram.append(int_next_symbol)
   return str_ngram[context_size:]
+
+def WordVector(word, lang_feat, network, symbol_table, context_size):
+  str_ngram = [start_symbol]*context_size + ngram_prefix
+  int_ngram = [symbol_table.WordIndex(w) for w in str_ngram]
   
+  ngram_vectors = []
+  for ngram in zip(*[int_ngram[i:] for i in range(context_size)]):
+    ngram_vectors.append(network.ProbVectorGivenPrefix(ngram, lang_feat))
+  
+  return numpy.mean(ngram_vectors, axis=0)
+               
 def main():
   print "Language:", args.lang
   word = u"ɑː g"

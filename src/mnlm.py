@@ -118,25 +118,27 @@ class MNLM(object):
     prob_matrix = self.softmax_probs(self.NgramToVector_(x), lang_feat)
     return CollectSoftmaxVectors(prob_matrix)
   
-  def Predict(self, ngram, lang_feat, n_best=1):
+  def ProbVectorGivenPrefix(self, ngram, lang_feat):
     prob_matrix = self.softmax_probs(self.NgramToVector_([ngram]), lang_feat)
     assert prob_matrix.shape[0] == 1, prob_matrix.shape
+    return prob_matrix[0]
+    
+  def Predict(self, ngram, lang_feat, n_best=1):
+    prob_vector = self.ProbVectorGivenPrefix(ngram, lang_feat)
     if n_best == 1:
-      return numpy.argmax(prob_matrix, axis=1)[0]
+      return numpy.argmax(prob_vector)
     else:
-      prob_matrix = prob_matrix[0]
-      return heapq.nlargest(n_best, range(len(prob_matrix)), prob_matrix.take)[-1]
+      return heapq.nlargest(n_best, range(len(prob_vector)), prob_vector.take)[-1]
       
   def PredictStochastic(self, ngram, lang_feat):
-    prob_matrix = self.softmax_probs(self.NgramToVector_([ngram]), lang_feat)
-    assert prob_matrix.shape[0] == 1, prob_matrix.shape
+    prob_vector = self.ProbVectorGivenPrefix(ngram, lang_feat)
     cumulative_prob = 0
     rand_ind = random.random()
-    for ind, prob in enumerate(prob_matrix[0]):
+    for ind, prob in enumerate(prob_vector):
       cumulative_prob += prob
       if rand_ind < cumulative_prob:
         return ind
-    return numpy.argmax(prob_matrix, axis=1)[0]
+    return numpy.argmax(prob_vector)
     
   def NgramToVector_(self, train_x):
     def flatten(l):

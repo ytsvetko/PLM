@@ -18,7 +18,7 @@ parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/
 parser.add_argument('--vector_size', type=int, default=70)
 parser.add_argument('--ngram_order', type=int, default=5)
 parser.add_argument('--batch_size', type=int, default=100)
-parser.add_argument('--num_epochs', type=int, default=50)
+parser.add_argument('--num_epochs', type=int, default=100)
 parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work")
 parser.add_argument('--out_vectors', default="vectors")
 parser.add_argument('--out_softmax_vectors', default="softmax_vectors")
