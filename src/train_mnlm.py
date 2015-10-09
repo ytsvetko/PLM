@@ -5,18 +5,15 @@ import codecs
 import os
 import numpy
 from sklearn.datasets import fetch_mldata
-from sklearn.cross_validation import train_test_split
 from sklearn.metrics import f1_score
-from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 import mnlm 
 import symbol_table as st
 
-rng = numpy.random.RandomState(2016)
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--lang_list', default="en_ru_fr_ro_it_mt")
-parser.add_argument('--corpus_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-corpus.")
+parser.add_argument('--train_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/train/pron-corpus.")
+parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-corpus.")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--vector_size', type=int, default=70)
 parser.add_argument('--ngram_order', type=int, default=5)
@@ -64,6 +61,17 @@ def SaveVectors(symbol_table, vector_matrix, filename):
     vector = [str(num) for num in vector]
     out_f.write(u"{} {}\n".format(symbol_table.IndexToWord(i), " ".join(vector)))
 
+def AppendLangData(symbol_table, ngram_order, corpus_filename, lang_feat_vector_filename, x, y, lang_feat):
+  x_lang, y_lang = LoadData(corpus_filename, symbol_table, ngram_order)
+  lang_feat_lang = LoadLangFeatVector(lang_feat_vector_filename, len(x_lang))
+  if x is None:
+    return numpy.array(x_lang), numpy.array(y_lang), numpy.array(lang_feat_lang)
+  else:
+    x = numpy.concatenate((x, x_lang), axis=0)
+    y = numpy.concatenate((y, y_lang), axis=0)
+    lang_feat = numpy.concatenate((lang_feat, lang_feat_lang), axis=0)
+    return x, y, lang_feat
+  
 def main():
   try:
     os.stat(os.path.join(args.network_dir, args.lang_list))
@@ -74,27 +82,20 @@ def main():
   symbol_table_path = os.path.join(args.network_dir, args.lang_list, args.symbol_table)
   if os.path.exists(symbol_table_path):
     symbol_table.LoadFromFile(symbol_table_path)
-  x, y, lang_feat, vocab_size = None, None, None, 0
+  train_x, train_y, train_lang_feat = None, None, None
+  dev_x, dev_y, dev_lang_feat = None, None, None
   for lang in args.lang_list.split("_"):
     print "Language:", lang
-    corpus = args.corpus_path + lang
     lang_feat_vector = args.lang_vector_path + lang
-
-    x_lang, y_lang = LoadData(corpus, symbol_table, args.ngram_order)
-    lang_feat_lang = LoadLangFeatVector(lang_feat_vector, len(x_lang))
-
-    if x is None: 
-      x, y, lang_feat = numpy.array(x_lang), numpy.array(y_lang), numpy.array(lang_feat_lang)
-    else:
-      x = numpy.concatenate((x, x_lang), axis=0)
-      y = numpy.concatenate((y, y_lang), axis=0)
-      lang_feat = numpy.concatenate((lang_feat, lang_feat_lang), axis=0)
-
-  train_x, dev_x, train_y, dev_y, train_lang_feat, dev_lang_feat = train_test_split(
-      x, y, lang_feat, test_size=0.2, random_state=2016) 
+    train_x, train_y, train_lang_feat = AppendLangData(
+        symbol_table, args.ngram_order, args.train_path + lang,
+        lang_feat_vector, train_x, train_y, train_lang_feat)
+    dev_x, dev_y, dev_lang_feat = AppendLangData(
+        symbol_table, args.ngram_order, args.dev_path + lang,
+        lang_feat_vector, dev_x, dev_y, dev_lang_feat)
 
   network = mnlm.MNLM(symbol_table.Size(), args.vector_size, args.ngram_order-1,
-                      lang_feat.shape[1])
+                      train_lang_feat.shape[1])
   if args.load_network:
     network.LoadModel(args.network_dir)
   print "Training"

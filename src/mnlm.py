@@ -72,9 +72,22 @@ class MNLM(object):
     train_ppl = numpy.power(2.0, train_logp)
     return train_logp, train_ppl
 
-  def Test(self, x, y, lang_feat):
-    test_cost = self.test(self.NgramToVector_(x), y, lang_feat)
-    test_ppl = numpy.power(2.0, test_cost)
+  def Test(self, x, y, lang_feat, batch_size=100):
+    if batch_size > x.shape[0]:
+      batch_size = x.shape[0]
+    nbatches = x.shape[0]//batch_size
+    
+    test_costs = []
+    for i in range(nbatches):
+      start = i * batch_size
+      end = start + batch_size
+      vec_x = self.NgramToVector_(x[start:end]) 
+      cost = self.test(vec_x, y[start:end], lang_feat[start:end])
+      test_costs.append(cost)
+      if i % 1000 == 0:
+        print "Batch {}, cost: {}".format(i, cost)
+    test_logp = numpy.mean(test_costs)
+    test_ppl = numpy.power(2.0, test_logp)
     return test_cost, test_ppl
 
   def SoftmaxVectors(self, x, y, lang_feat):
