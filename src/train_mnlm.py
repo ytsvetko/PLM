@@ -108,10 +108,10 @@ def main():
       print "Train cost mean:", train_logp, "perplexity:", train_ppl
       dev_logp, dev_ppl = network.Test(dev_x, dev_y, dev_lang_feat)
       print "Dev cost mean:", dev_logp, "perplexity:", dev_ppl
-      if (dev_ppl - prev_dev_ppl) > 0.1 or abs(dev_ppl - train_ppl) < 0.0001:
-        # stop training if dev perplexity is growing or when train ppl equals dev ppl
-        break
-  
+      #if (dev_ppl - prev_dev_ppl) > 0.1 or abs(dev_ppl - train_ppl) < 0.0001:
+      #  # stop training if dev perplexity is growing or when train ppl equals dev ppl
+      #  break
+      #prev_dev_ppl = dev_ppl
       os.mkdir(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
       if args.save_network:
         network.SaveModel(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))

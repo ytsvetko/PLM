@@ -88,7 +88,7 @@ class MNLM(object):
         print "Batch {}, cost: {}".format(i, cost)
     test_logp = numpy.mean(test_costs)
     test_ppl = numpy.power(2.0, test_logp)
-    return test_cost, test_ppl
+    return test_logp, test_ppl
 
   def SoftmaxVectors(self, x, y, lang_feat):
     # Helper function for averaging softmax predictions for each value of 'y'

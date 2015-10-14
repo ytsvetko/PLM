@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import division
 
 import argparse
 import codecs
 import os
 import sys
 import numpy
+import collections
 from sklearn.datasets import fetch_mldata
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import f1_score
@@ -15,20 +17,21 @@ import mnlm
 import symbol_table as st
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lang', default="en")
-parser.add_argument('--corpus_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-corpus.")
+parser.add_argument('--lang', default="ro")
+parser.add_argument('--pron_dict_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.")
+parser.add_argument('--out_word_vectors_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.vectors.")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--vector_size', type=int, default=70)
-parser.add_argument('--ngram_order', type=int, default=4)
+parser.add_argument('--ngram_order', type=int, default=5)
 
-parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/en_ru")
+parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/en_ru_fr_ro")
+parser.add_argument('--network_epoch_dir', default="94")
 parser.add_argument('--vectors', default="vectors")
 parser.add_argument('--softmax_vectors', default="softmax_vectors")
 parser.add_argument('--symbol_table', default="symbol_table")
 
 parser.add_argument('--stochastic_sampling', action='store_true', default=False)
 parser.add_argument('--constrain_prefixes', action='store_true', default=False)
-
 
 args = parser.parse_args()
 
@@ -45,7 +48,11 @@ def LoadCorpus(corpus_path):
   trie = marisa_trie.Trie()
   corpus = set()
   for line in codecs.open(corpus_path, "r", "utf-8"):
-    corpus.add(line.strip())
+    tokens = line.strip().split(" ||| ")
+    if len(tokens) != 2: 
+      continue
+    word, pronunciation = tokens
+    corpus.add(pronunciation)
   return marisa_trie.Trie(corpus)
   
 def Generate(ngram_prefix, lang_feat, network, symbol_table, 
@@ -83,7 +90,7 @@ def Generate(ngram_prefix, lang_feat, network, symbol_table,
   return str_ngram[context_size:]
 
 def WordVector(word, lang_feat, network, symbol_table, context_size):
-  str_ngram = [start_symbol]*context_size + ngram_prefix
+  str_ngram = [start_symbol]*context_size + word
   int_ngram = [symbol_table.WordIndex(w) for w in str_ngram]
   
   ngram_vectors = []
@@ -91,30 +98,66 @@ def WordVector(word, lang_feat, network, symbol_table, context_size):
     ngram_vectors.append(network.ProbVectorGivenPrefix(ngram, lang_feat))
   
   return numpy.mean(ngram_vectors, axis=0)
-               
+   
+   
+def GenerateWordVectorsForLanguage(in_filename, out_filename,  
+               lang_feat, network, symbol_table, context_size):
+  word_vectors = collections.defaultdict(list)
+  print "loading vectors"
+  for line_num, line in enumerate(codecs.open(in_filename, "r", "utf-8")):
+    tokens = line.strip().split(" ||| ")
+    if len(tokens) != 2: 
+      continue
+    if line_num % 1000 == 0:
+      print line_num
+    word, pron = tokens
+    word_vector = WordVector(pron.split(), lang_feat, network, symbol_table, context_size)
+    word_vectors [word].append(word_vector)
+    
+  print "writing vectors"
+  out_f = codecs.open(out_filename, "w", "utf-8")
+  
+  for word in sorted(word_vectors.iterkeys()):
+    word_vector = word_vectors[word][0]
+    if len(word_vectors[word]) > 1:
+      for v in  word_vectors[word][1:]: 
+        word_vector += v
+      word_vector /= len(word_vectors[word])
+      
+    str_vector = " ".join(["%.8f" % number for number in word_vector])
+    out_f.write(u"{} {}\n".format(word, str_vector))
+
+      
 def main():
   print "Language:", args.lang
-  word = u"ɑː g"
   max_generated_len=sys.maxint
-  corpus_path = args.corpus_path + args.lang
-  corpus = LoadCorpus(corpus_path) # Pronunciation dictionary trie
+  corpus_path = args.pron_dict_path + args.lang
     
   lang_feat_vector = args.lang_vector_path + args.lang
   lang_feat = LoadLangFeatVector(lang_feat_vector, 1)
+  
   symbol_table = st.SymbolTable()
   symbol_table_path = os.path.join(args.network_dir, args.symbol_table)
   symbol_table.LoadFromFile(symbol_table_path)
     
   network = mnlm.MNLM(symbol_table.Size(), args.vector_size, 
                       args.ngram_order-1, lang_feat.shape[1])
-  network.LoadModel(args.network_dir)
+  network.LoadModel(os.path.join(args.network_dir, args.network_epoch_dir))
   
-  generated_str = Generate(word.split(), lang_feat, network, 
+  GenerateWordVectorsForLanguage(corpus_path, args.out_word_vectors_path + args.lang, 
+                   lang_feat, network, symbol_table, args.ngram_order-1)
+                           
+  """
+  # Generate words
+  prefix = u"ɑː g"
+  corpus = LoadCorpus(corpus_path) # Pronunciation dictionary trie
+  generated_str = Generate(prefix.split(), lang_feat, network, 
                            symbol_table, args.ngram_order-1,
                            max_generated_len, corpus,
                            args.stochastic_sampling, args.constrain_prefixes)
   if generated_str:
     print u" ".join(generated_str)
-
+  """
+  
 if __name__ == '__main__':
     main()
