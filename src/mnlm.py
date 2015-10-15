@@ -13,6 +13,7 @@ from sklearn.utils import shuffle
 import collections
 import heapq
 import random 
+import math
 
 #random.seed(1234)
 
@@ -52,16 +53,13 @@ class MNLM(object):
     train = theano.function(inputs=[self.x, self.t, self.lang_bias],
                             outputs=self.cost_fn, updates=updates, 
                             allow_input_downcast=True)
-
-    if batch_size > train_x.shape[0]:
-      batch_size = train_x.shape[0]
-    nbatches = train_x.shape[0]//batch_size
+    nbatches = int(math.ceil(train_x.shape[0]/batch_size))
     # Shuffle samples
     train_x, train_y, train_lang_feat = shuffle(train_x, train_y, train_lang_feat)
     train_costs = []
     for i in range(nbatches):
       start = i * batch_size
-      end = start + batch_size
+      end = min(start + batch_size, train_x.shape[0])
       vec_train_x = self.NgramToVector_(train_x[start:end]) 
       cost = train(vec_train_x, train_y[start:end], train_lang_feat[start:end])
       train_costs.append(cost)
@@ -73,24 +71,21 @@ class MNLM(object):
     return train_logp, train_ppl
 
   def Test(self, x, y, lang_feat, batch_size=100):
-    if batch_size > x.shape[0]:
-      batch_size = x.shape[0]
-    nbatches = x.shape[0]//batch_size
-    
+    nbatches = int(math.ceil(x.shape[0]/batch_size))
     test_costs = []
     for i in range(nbatches):
       start = i * batch_size
-      end = start + batch_size
+      end = min(start + batch_size, x.shape[0])
       vec_x = self.NgramToVector_(x[start:end]) 
       cost = self.test(vec_x, y[start:end], lang_feat[start:end])
       test_costs.append(cost)
       if i % 1000 == 0:
-        print "Batch {}, cost: {}".format(i, cost)
+        print "Test batch {}, cost: {}".format(i, cost)
     test_logp = numpy.mean(test_costs)
     test_ppl = numpy.power(2.0, test_logp)
     return test_logp, test_ppl
 
-  def SoftmaxVectors(self, x, y, lang_feat):
+  def SoftmaxVectors(self, x, y, lang_feat, batch_size=100):
     # Helper function for averaging softmax predictions for each value of 'y'
     def CollectSoftmaxVectors(prob_matrix):
       class VectorMean(object):
@@ -115,7 +110,18 @@ class MNLM(object):
         phone_softmax.append(softmax_sums[i].Mean())
       return phone_softmax
 
-    prob_matrix = self.softmax_probs(self.NgramToVector_(x), lang_feat)
+    nbatches = int(math.ceil(x.shape[0]/batch_size))
+    prob_matrix = None
+    for i in range(nbatches):
+      start = i * batch_size
+      end = min(start + batch_size, x.shape[0])
+      vec_x = self.NgramToVector_(x[start:end]) 
+      p_matrix = self.softmax_probs(vec_x, lang_feat[start:end])
+      if prob_matrix is None:
+        prob_matrix = numpy.zeros((x.shape[0], p_matrix.shape[1]))
+      prob_matrix[start:end] = p_matrix
+      if i % 1000 == 0:
+        print "Softmax batch {}".format(i)
     return CollectSoftmaxVectors(prob_matrix)
   
   def ProbVectorGivenPrefix(self, ngram, lang_feat):
