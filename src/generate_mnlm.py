@@ -15,9 +15,10 @@ import marisa_trie
 
 import mnlm 
 import symbol_table as st
+import levenshtein
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lang', default="ro")
+parser.add_argument('--lang', default="fr_")
 parser.add_argument('--pron_dict_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.")
 parser.add_argument('--out_word_vectors_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.vectors.")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
@@ -89,21 +90,41 @@ def Generate(ngram_prefix, lang_feat, network, symbol_table,
     int_ngram.append(int_next_symbol)
   return str_ngram[context_size:]
 
-def WordVector(word, lang_feat, network, symbol_table, context_size):
+def WordVectorContextSoftmax(word, lang_feat, network, symbol_table, context_size):
   str_ngram = [start_symbol]*context_size + word
   int_ngram = [symbol_table.WordIndex(w) for w in str_ngram]
   
   ngram_vectors = []
   for ngram in zip(*[int_ngram[i:] for i in range(context_size)]):
-    ngram_vectors.append(network.ProbVectorGivenPrefix(ngram, lang_feat))
-  
-  return numpy.mean(ngram_vectors, axis=0)
+    ngram_vectors.append(network.ProbVectorGivenPrefix(ngram, lang_feat).tolist())
+  assert len(ngram_vectors[:-1]) == len(word), (len(ngram_vectors), len(word))
+  return ngram_vectors[:-1] #numpy.mean(ngram_vectors, axis=0)
    
+def WordVectorSoftmax(word, lang_feat, network, symbol_table):
+  vectors = []
+  for w in word:
+    int_w = symbol_table.WordIndex(w)
+    vectors.append(network.softmax_vectors[int_w].tolist())
+  assert len(vectors) == len(word), (len(vectors), len(word))
+  return vectors 
+
+def WordVectorR(word, network, symbol_table):
+  vectors = []
+  for w in word:
+    int_w = symbol_table.WordIndex(w)
+    vectors.append(network.vectors[int_w].tolist())
+  assert len(vectors) == len(word), (len(vectors), len(word))
+  return vectors 
    
 def GenerateWordVectorsForLanguage(in_filename, out_filename,  
                lang_feat, network, symbol_table, context_size):
-  word_vectors = collections.defaultdict(list)
-  print "loading vectors"
+  def str_vector(word_vectors):
+    result = []
+    for word_vector in word_vectors:
+      result.append(" ".join(["%.8f" % number for number in word_vector]))
+    return "\t".join(result)
+    
+  out_f = codecs.open(out_filename, "w", "utf-8")  
   for line_num, line in enumerate(codecs.open(in_filename, "r", "utf-8")):
     tokens = line.strip().split(" ||| ")
     if len(tokens) != 2: 
@@ -111,23 +132,18 @@ def GenerateWordVectorsForLanguage(in_filename, out_filename,
     if line_num % 1000 == 0:
       print line_num
     word, pron = tokens
-    word_vector = WordVector(pron.split(), lang_feat, network, symbol_table, context_size)
-    word_vectors [word].append(word_vector)
-    
-  print "writing vectors"
-  out_f = codecs.open(out_filename, "w", "utf-8")
-  
-  for word in sorted(word_vectors.iterkeys()):
-    word_vector = word_vectors[word][0]
-    if len(word_vectors[word]) > 1:
-      for v in  word_vectors[word][1:]: 
-        word_vector += v
-      word_vector /= len(word_vectors[word])
-      
-    str_vector = " ".join(["%.8f" % number for number in word_vector])
-    out_f.write(u"{} {}\n".format(word, str_vector))
+    word_vector_softmax = WordVectorSoftmax(pron.split(), lang_feat, 
+          network, symbol_table)
+    word_vector_context_softmax = WordVectorContextSoftmax(pron.split(), lang_feat, 
+          network, symbol_table, context_size)      
+    word_vector_r = WordVectorR(pron.split(), network, symbol_table)
+        
+    #word_vector = word_vectors[word][0]
+    out_f.write(u"{} ||| {} ||| {} ||| {} ||| {}\n".format(word, pron, 
+          str_vector(word_vector_softmax), str_vector(word_vector_context_softmax), 
+          str_vector(word_vector_r)))
 
-      
+
 def main():
   print "Language:", args.lang
   max_generated_len=sys.maxint

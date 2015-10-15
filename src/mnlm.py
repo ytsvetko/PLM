@@ -23,6 +23,7 @@ import learning_method
 class MNLM(object):
   def __init__(self, vocab_size, vector_size, context_size, lang_feat_size):
     self.vectors = numpy.zeros([vocab_size, vector_size])  # Current vectors
+    self.softmax_vectors = numpy.zeros([vocab_size, vector_size])
     self.layers = [
                 layer.LBL_Biased(context_size*vector_size, vector_size, lang_feat_size, 
                                  lang_activation=T.nnet.sigmoid),
@@ -122,7 +123,8 @@ class MNLM(object):
       prob_matrix[start:end] = p_matrix
       if i % 1000 == 0:
         print "Softmax batch {}".format(i)
-    return CollectSoftmaxVectors(prob_matrix)
+    self.softmax_vectors = CollectSoftmaxVectors(prob_matrix)
+    return self.softmax_vectors
   
   def ProbVectorGivenPrefix(self, ngram, lang_feat):
     prob_matrix = self.softmax_probs(self.NgramToVector_([ngram]), lang_feat)
