@@ -112,10 +112,6 @@ def main():
       #  # stop training if dev perplexity is growing or when train ppl equals dev ppl
       #  break
       #prev_dev_ppl = dev_ppl
-      if not os.path.exists(os.path.join(args.network_dir, args.lang_list, str(epoch+1))):
-        os.mkdir(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
-      if args.save_network:
-        network.SaveModel(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
       if args.out_vectors:
         out_vectors_path = os.path.join(args.network_dir, args.lang_list, str(epoch+1), args.out_vectors)
         SaveVectors(symbol_table, network.vectors, out_vectors_path)
@@ -123,8 +119,23 @@ def main():
         out_softmax_vectors_path = os.path.join(args.network_dir, args.lang_list, args.out_softmax_vectors)
         softmax_vectors = network.SoftmaxVectors(train_x, train_y, train_lang_feat)
         SaveVectors(symbol_table, softmax_vectors, out_softmax_vectors_path)
+      if not os.path.exists(os.path.join(args.network_dir, args.lang_list, str(epoch+1))):
+        os.mkdir(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
+      if args.save_network:
+        network.SaveModel(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
   except KeyboardInterrupt:
     print "Aborted. Saving to file."
+    if args.out_vectors:
+      out_vectors_path = os.path.join(args.network_dir, args.lang_list, str(epoch+1), args.out_vectors)
+      SaveVectors(symbol_table, network.vectors, out_vectors_path)
+    if args.out_softmax_vectors:
+      out_softmax_vectors_path = os.path.join(args.network_dir, args.lang_list, args.out_softmax_vectors)
+      softmax_vectors = network.SoftmaxVectors(train_x, train_y, train_lang_feat)
+      SaveVectors(symbol_table, softmax_vectors, out_softmax_vectors_path)
+    if not os.path.exists(os.path.join(args.network_dir, args.lang_list, str(epoch+1))):
+      os.mkdir(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
+    if args.save_network:
+      network.SaveModel(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
   if args.symbol_table:
     symbol_table.SaveToFile(symbol_table_path)
 
