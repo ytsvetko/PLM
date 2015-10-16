@@ -15,17 +15,16 @@ import marisa_trie
 
 import mnlm 
 import symbol_table as st
-import levenshtein
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lang', default="fr_")
+parser.add_argument('--lang', default="ro")
 parser.add_argument('--pron_dict_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.")
 parser.add_argument('--out_word_vectors_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.vectors.")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--vector_size', type=int, default=70)
 parser.add_argument('--ngram_order', type=int, default=5)
 
-parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/en_ru_fr_ro")
+parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/en_ru_fr_ro_it_mt")
 parser.add_argument('--network_epoch_dir', default="94")
 parser.add_argument('--vectors', default="vectors")
 parser.add_argument('--softmax_vectors', default="softmax_vectors")
