@@ -12,19 +12,21 @@ import symbol_table as st
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--lang_list', default="en_ru_fr_ro_it_mt")
-parser.add_argument('--train_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/train/pron-corpus.")
-parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-corpus.")
+parser.add_argument('--train_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/train/pron-dict.")
+parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
-parser.add_argument('--vector_size', type=int, default=70)
+
+parser.add_argument('--vector_size', type=int, default=90)
 parser.add_argument('--ngram_order', type=int, default=4)
 parser.add_argument('--batch_size', type=int, default=100)
 parser.add_argument('--num_epochs', type=int, default=100)
+
 parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work")
 parser.add_argument('--out_vectors', default="vectors")
 parser.add_argument('--out_softmax_vectors', default="softmax_vectors")
 parser.add_argument('--load_network', action='store_true', default=False)
 parser.add_argument('--save_network', action='store_true', default=False)
-parser.add_argument('--symbol_table', default="symbol_table")
+parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.en_ru_fr_ro_it_mt")
 args = parser.parse_args()
 
 start_symbol = "<s>"
@@ -79,9 +81,8 @@ def main():
     os.mkdir(os.path.join(args.network_dir, args.lang_list))
     
   symbol_table = st.SymbolTable()
-  symbol_table_path = os.path.join(args.network_dir, args.lang_list, args.symbol_table)
-  if os.path.exists(symbol_table_path):
-    symbol_table.LoadFromFile(symbol_table_path)
+  if os.path.exists(args.symbol_table):
+    symbol_table.LoadFromFile(args.symbol_table)
   train_x, train_y, train_lang_feat = None, None, None
   dev_x, dev_y, dev_lang_feat = None, None, None
   for lang in args.lang_list.split("_"):
@@ -149,8 +150,6 @@ def main():
 
     if args.save_network:
       network.SaveModel(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
-  if args.symbol_table:
-    symbol_table.SaveToFile(symbol_table_path)
-
+      
 if __name__ == '__main__':
     main()

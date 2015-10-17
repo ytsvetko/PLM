@@ -9,15 +9,15 @@ import mnlm
 import symbol_table as st
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/ro_fr/85")
-parser.add_argument('--lang_list', default="ro_fr")
+parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/zero/en/100")
+parser.add_argument('--lang_list', default="en")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
-parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/ro_fr/symbol_table")
+parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.en_ru_fr_ro_it_mt")
 
-parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-corpus.fr")
-parser.add_argument('--test_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-corpus.fr")
+parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en")
+parser.add_argument('--test_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en")
 
-parser.add_argument('--vector_size', type=int, default=70)
+parser.add_argument('--vector_size', type=int, default=90)
 parser.add_argument('--ngram_order', type=int, default=4)
 parser.add_argument('--batch_size', type=int, default=100)
 args = parser.parse_args()

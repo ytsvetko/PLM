@@ -5,7 +5,7 @@ import os
 import random
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--in_corpus_file', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-corpus.en")
+parser.add_argument('--in_corpus_file', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.sw")
 parser.add_argument('--out_train_dir', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/train")
 parser.add_argument('--out_dev_dir', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev")
 parser.add_argument('--out_test_dir', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/test")
@@ -21,12 +21,16 @@ def main():
   train_file = open(os.path.join(args.out_train_dir, filename), "w")
   dev_file = open(os.path.join(args.out_dev_dir, filename), "w")
   for line in open(args.in_corpus_file):
+    tokens = line.split(" ||| ")
+    if len(tokens) != 2: 
+      continue
+    pronunciation = tokens[1]
     if random.random() < args.dev_ratio:
-      dev_file.write(line)
+      dev_file.write(pronunciation)
     elif random.random() < args.test_ratio:
-      test_file.write(line)
+      test_file.write(pronunciation)
     else:
-      train_file.write(line)
+      train_file.write(pronunciation)
 
 if __name__ == '__main__':
     main()
