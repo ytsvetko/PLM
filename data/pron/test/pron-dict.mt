@@ -944,7 +944,7 @@ b i l m ɐ dʒ dʒ ɔ r ɐ n dz ɐ
 b i l m i f t ʊ ħ
 b i l m ʊ t uː r
 b i l p ɐ r t ɛ tʃ i p ɐ dz ts j ɔ n i
-b i l ʔ iːː d ɐ
+b i l ʔ iː d ɐ
 b i l ʔ i ɛː ɛ d ɐ
 b i l ʔ i ɛ g d ɐ
 b i l ħ b ʊ l ɐ
@@ -1102,7 +1102,7 @@ b ʊ d d ɛ b uː s
 b ʊ f ɛ r
 b uː f ɛ r ɛ t
 b uː f l uː
-b uːː ɐ w w i ɛ tʃ
+b uː ɐ w w i ɛ tʃ
 b ʊ k ɐ
 b uː k k ɛ t i
 b uː l b uː l
@@ -1963,7 +1963,7 @@ d m i r i j i ɛ t
 d m i r i j iː t ɔ m
 d m t ʊ
 d m ʊ
-d m uːː ɐ
+d m uː ɐ
 d n
 d n
 d ɔ b ʊ p ɐ l
@@ -4508,7 +4508,7 @@ iː ʔ ɐ j j ɛ m
 iː ʔ ɐ s ɐ r
 iː ʔ ɐ s r uː
 iː ʔ ɐ t ʊ
-iː ʔ iːː d uː
+iː ʔ iː d uː
 iː ʔ iː s
 iː ʔ i s ɐ
 iː ʔ uː m ʊ
@@ -5478,7 +5478,7 @@ j i s t uː d j ɐ
 j i s t ħ ɐ r r ɛ tʃ
 j i s t ħ ɐ r r dʒ ʊ
 j i t b i ɛː d uː
-j i t b iːː ɛ t
+j i t b iː ɛ t
 j i t f ɐ tʃ tʃ ɐ w l ɔ m
 j i t f ɛ r r ʃ ʊ
 j i t f ʊ ʃ
@@ -5499,7 +5499,7 @@ j i t n ɛ ħ ħ i ʃ
 j i t n i ʃ ʃ i ʃ
 j i t ɔ l b uː ħ
 j i t ɔ l b ʊ ɔ m
-j i t ʔ iːː d uː
+j i t ʔ iː d uː
 j i t ʔ i ɛː uː
 j i t ʔ i ɛ s ʊ
 j i t r ɐ z m ɛ t ʊ
@@ -5622,7 +5622,7 @@ j ʔ ɐ j m uː ʃ
 j ʔ ɐ j m ʊ ʃ
 j ʔ ɐ n ʔ ɐ l
 j ʔ ɐ ʃ ʃ r ʊ
-j ʔ iːː d ʊ ɐ
+j ʔ iː d ʊ ɐ
 j ʔ i ɛː d ʊ ɔ m
 j ʔ i ɛ s ʊ
 j ʔ iː s ʊ
@@ -7280,7 +7280,7 @@ m i b d i
 m i b d i j i n
 m i b d uː l i n
 m i b uː t ɐ
-m i b j uːː i n
+m i b j uː i n
 m i ɛ l ɐ n g ɛ l ɔ
 m i ɔ s i
 m i r ɔ n ʊ l ɛ uː s
@@ -7292,7 +7292,7 @@ m i d d l ɛ s ɛ ʃ
 m i d i
 m i d l ɐ n d s
 m i d r uː b ɐ
-m iːː ɛ k
+m iː ɛ k
 m i ɛ r t
 m iː ʊ r i
 m iː ʃ i
@@ -7607,7 +7607,7 @@ p r
 ʔ ɐ s
 ʔ ɐ s m ɐ
 ʔ i ɛː d ɐ
-ʔ iːː ɛ t
+ʔ iː ɛ t
 r ɛ f
 r l
 r ɔ b i j i n
@@ -7723,7 +7723,7 @@ w ɐ
 w ɐ r r ɐ p
 w ɐ s l ɐ
 w ɛ t ʔ ɐ
-w iːː d ɐ
+w iː d ɐ
 w iː l d i n
 w iː dʒ b ɐ
 ʃ i ɛ t ɛ l
@@ -9171,7 +9171,7 @@ p l ɔ ɐ
 ʔ ɛ ħ
 ʔ ɛ l ɛ
 ʔ ħ
-ʔ iːː d i n
+ʔ iː d i n
 ʔ i ɛː d uː
 ʔ i ɛ s ɔ m
 ʔ iː s ɔ m
@@ -12602,7 +12602,7 @@ dʒ w ɛ n ħ ɐ j ħ
 dʒ dʒ ɐ r r b ɛ t
 dʒ dʒ i b ʊ
 dʒ dʒ i ɛː ɛ l ɔ m
-dʒ dʒ iːː ɛ l ɔ m
+dʒ dʒ iː ɛ l ɔ m
 dʒ dʒ uː d i k ɐ t
 dʒ dʒ ʊ d i k ɐ t
 dʒ dʒ ʊ s t i f i k ɐ w
@@ -12693,7 +12693,7 @@ z ɐ w
 z b i ħ
 z b i l ɐ n tʃ
 z b ʊ r s ɐ t i
-z ɛ b iːː ɐ
+z ɛ b iː ɐ
 z ɛ b ʊ tʃ
 z ɛ b r i
 z ɛ n uː n i
