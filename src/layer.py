@@ -20,7 +20,7 @@ class Activation:
 
 
 class Linear:
-    def __init__(self, vis_dim, hid_dim, scale):
+    def __init__(self, vis_dim, hid_dim, scale=0.08):
         self.W = sharedX(rng.randn(vis_dim, hid_dim) * scale)
         self.b = sharedX(rng.randn(hid_dim,) * scale)
         self.params = [ self.W, self.b ]
@@ -45,7 +45,7 @@ class LBL_Biased:
         return h
 
 class RNN:
-    def __init__(self, vis_dim, hid_dim, scale):
+    def __init__(self, vis_dim, hid_dim, scale=0.08):
         self.scale = scale
         self.hid_dim = hid_dim
 

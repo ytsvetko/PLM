@@ -7,33 +7,31 @@ import numpy
 from sklearn.datasets import fetch_mldata
 from sklearn.metrics import f1_score
 
-import mnlm 
+import mplm_learn_lang as mplm
 import symbol_table as st
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lang_list', default="en_ru_fr_ro_it_mt")
+parser.add_argument('--lang_list', default="en_fr")
 parser.add_argument('--train_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/train/pron-dict.")
 parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
-
 parser.add_argument('--vector_size', type=int, default=90)
 parser.add_argument('--ngram_order', type=int, default=4)
 parser.add_argument('--batch_size', type=int, default=100)
 parser.add_argument('--num_epochs', type=int, default=100)
-
-parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work")
+parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang")
 parser.add_argument('--out_vectors', default="vectors")
 parser.add_argument('--out_softmax_vectors', default="softmax_vectors")
 parser.add_argument('--load_network', action='store_true', default=False)
 parser.add_argument('--save_network', action='store_true', default=False)
-parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.en_ru_fr_ro_it_mt")
+parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.mplm_learn_lang.en_ru_fr_ro_it_mt")
 args = parser.parse_args()
 
-start_symbol = "pau"
-end_symbol = "pau"
+start_symbol = "<s>"
+end_symbol = "</s>"
 
 
-def LoadData(corpus, symbol_table, ngram_order):
+def LoadData(corpus, symbol_table, ngram_order, lang):
   # in format: text corpus, embeddings, n-gram order
   # out format: for each n-gram, x: n-1 embeddings appended; y: n's word 1-hot representation
   x = []
@@ -47,7 +45,7 @@ def LoadData(corpus, symbol_table, ngram_order):
         yield ngram
        
   for ngram in next_ngram(corpus):
-    x.append([symbol_table.WordIndex(word) for word in ngram[:-1]])
+    x.append([symbol_table.WordIndex(word) for word in ngram[:-1]]+[symbol_table.WordIndex(lang)])
     y.append(symbol_table.WordIndex(ngram[-1]))
       
   return x, y
@@ -63,8 +61,8 @@ def SaveVectors(symbol_table, vector_matrix, filename):
     vector = [str(num) for num in vector]
     out_f.write(u"{} {}\n".format(symbol_table.IndexToWord(i), " ".join(vector)))
 
-def AppendLangData(symbol_table, ngram_order, corpus_filename, lang_feat_vector_filename, x, y, lang_feat):
-  x_lang, y_lang = LoadData(corpus_filename, symbol_table, ngram_order)
+def AppendLangData(symbol_table, ngram_order, corpus_filename, lang_feat_vector_filename, x, y, lang, lang_feat):
+  x_lang, y_lang = LoadData(corpus_filename, symbol_table, ngram_order, lang)
   lang_feat_lang = LoadLangFeatVector(lang_feat_vector_filename, len(x_lang))
   if x is None:
     return numpy.array(x_lang), numpy.array(y_lang), numpy.array(lang_feat_lang)
@@ -90,13 +88,13 @@ def main():
     lang_feat_vector = args.lang_vector_path + lang
     train_x, train_y, train_lang_feat = AppendLangData(
         symbol_table, args.ngram_order, args.train_path + lang,
-        lang_feat_vector, train_x, train_y, train_lang_feat)
+        lang_feat_vector, train_x, train_y, lang, train_lang_feat)
     dev_x, dev_y, dev_lang_feat = AppendLangData(
         symbol_table, args.ngram_order, args.dev_path + lang,
-        lang_feat_vector, dev_x, dev_y, dev_lang_feat)
+        lang_feat_vector, dev_x, dev_y, lang, dev_lang_feat)
 
-  network = mnlm.MNLM(symbol_table.Size(), args.vector_size, args.ngram_order-1,
-                      train_lang_feat.shape[1])
+  network = mplm.MNLM(symbol_table.Size(), args.vector_size, args.ngram_order,
+                      train_lang_feat.shape[1])#remove last parameter for training without lang vectors
   if args.load_network:
     network.LoadModel(args.network_dir)
   print "Training"
@@ -150,6 +148,6 @@ def main():
 
     if args.save_network:
       network.SaveModel(os.path.join(args.network_dir, args.lang_list, str(epoch+1)))
-      
+
 if __name__ == '__main__':
     main()

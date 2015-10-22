@@ -13,6 +13,7 @@ parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/dat
 parser.add_argument('--test_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--symbol_table', default="symbol_table.")
+parser.add_argument('--learn_lang', action='store_true', default=False)
 args = parser.parse_args()
 
 start_symbol = "<s>"
@@ -37,6 +38,8 @@ def main():
     symbol_table.LoadFromFile(symbol_table_path)
   for lang in args.lang_list.split("_"):
     print "Language:", lang
+    if args.learn_lang:
+      symbol_table.WordIndex(lang)
     AddToSymbolTable(args.train_path + lang, symbol_table)
     AddToSymbolTable(args.dev_path + lang, symbol_table)
     AddToSymbolTable(args.test_path + lang, symbol_table)

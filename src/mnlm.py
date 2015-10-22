@@ -81,7 +81,7 @@ class MNLM(object):
       cost = self.test(vec_x, y[start:end], lang_feat[start:end])
       test_costs.append(cost)
       if i % 1000 == 0:
-        print "Test batch {}, cost: {}".format(i, cost)
+        print "Eval batch {}, cost: {}".format(i, cost)
     test_logp = numpy.mean(test_costs)
     test_ppl = numpy.power(2.0, test_logp)
     return test_logp, test_ppl

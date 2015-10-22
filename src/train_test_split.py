@@ -5,7 +5,7 @@ import os
 import random
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--in_corpus_file', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.sw")
+parser.add_argument('--in_corpus_file', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.hi")
 parser.add_argument('--out_train_dir', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/train")
 parser.add_argument('--out_dev_dir', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev")
 parser.add_argument('--out_test_dir', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/test")

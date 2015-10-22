@@ -120,9 +120,9 @@ def BuildFeatureVector(in_filename, out_filename):
       out_f.write("0\n")
     found = False
     
-for in_filename in glob.glob("/usr0/home/ytsvetko/projects/pnn/data/wals/*.csv"):
+for in_filename in glob.glob("/usr1/home/ytsvetko/projects/mnlm/data/wals/csv/*.csv"):
   print(in_filename)
   lang = os.path.basename(in_filename)[:-4]
-  out_filename = "/usr0/home/ytsvetko/projects/pnn/data/wals/"+lang+".txt"
+  out_filename = "/usr1/home/ytsvetko/projects/mnlm/data/wals/csv/"+lang+".txt"
   BuildFeatureVector(in_filename, out_filename)
 
