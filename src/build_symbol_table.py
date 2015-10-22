@@ -14,6 +14,8 @@ parser.add_argument('--test_path', default="/usr1/home/ytsvetko/projects/mnlm/da
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--symbol_table', default="symbol_table.")
 parser.add_argument('--learn_lang', action='store_true', default=False)
+parser.add_argument('--brown_clusters')
+
 args = parser.parse_args()
 
 start_symbol = "<s>"
@@ -26,6 +28,20 @@ def AddToSymbolTable(corpus, symbol_table):
     for word in line.split():
       symbol_table.WordIndex(word)
   
+def LoadClusters(filename):
+  clusters = {}
+  clusters[start_symbol] = "C_EOS"
+  clusters[end_symbol] = "C_EOS"
+
+  for line in codecs.open(filename, "r", "utf-8"):
+    tokens = line.split()
+
+    if len(tokens) != 3:
+      continue
+    cluster_id, word, _ = tokens
+    clusters[word] = "C_"+cluster_id
+  return clusters
+ 
 def main():
   try:
     os.stat(os.path.join(args.network_dir, args.lang_list))
@@ -40,6 +56,10 @@ def main():
     print "Language:", lang
     if args.learn_lang:
       symbol_table.WordIndex(lang)
+    if args.brown_clusters:
+      clusters = LoadClusters(args.brown_clusters)
+      for phone, cluster_id in clusters.items():
+        symbol_table.WordIndex(cluster_id)
     AddToSymbolTable(args.train_path + lang, symbol_table)
     AddToSymbolTable(args.dev_path + lang, symbol_table)
     AddToSymbolTable(args.test_path + lang, symbol_table)

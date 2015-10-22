@@ -346,17 +346,21 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_v
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_plus_lang_vector.log
 
 ./best_system.py --log_file ../work/mlbl_b_learn_lang/plus_lang_vector/en_fr_plus_lang_vector.log 
-### Epoch 
+### Epoch 100 Perplexity 5.33885413207 
 
 ### Test on English
-./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_vector/en_fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_vector/en_fr/100 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 
 ### Output
+# Dev cost mean: 2.37741 perplexity: 5.19601774844
+# Test cost mean: 2.37558 perplexity: 5.18943748706
 
 ### Test on French
-./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_vector/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_vector/en_fr/100 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
+# Dev cost mean: 2.43457 perplexity: 5.40602851042
+# Test cost mean: 2.43725 perplexity: 5.41606618509
 
 ####################################################################################################
 ### + Typology language vector + lang_id
@@ -381,4 +385,148 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_i
 ./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_vector/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################
+# Modality-Biased Log-Bilinear Model 
+# + tanh activation
+# + learn language vector
+# + ngram shape
+####################
+lang_vector_path=/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape
+#tmux0
+
+
+./train_mplm_learn_lang_shape.py --lang_list en --batch_size 20 --save_network \
+                --lang_vector_path ${lang_vector_path} \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en.log
+
+./best_system.py --log_file  ../work/mlbl_b_learn_lang_shape/en.log
+### 
+
+### Test on English
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en/?? \
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+# 
+
+### Test on French
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# 
+
+####################################################################################################
+
+#tmux5
+
+./train_mplm_learn_lang_shape.py --lang_list fr --batch_size 20 --save_network \
+                --lang_vector_path ${lang_vector_path} \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/fr.log
+                
+./best_system.py --log_file ../work/mlbl_b_learn_lang_shape/fr.log
+###
+
+### Test on English
+./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+
+### Output
+# 
+
+### Test on French
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# 
+
+####################################################################################################
+
+#tmux4
+
+./train_mplm_learn_lang_shape.py --lang_list en_fr --batch_size 40 --save_network \
+                --lang_vector_path ${lang_vector_path} \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr.log
+                
+./best_system.py --log_file ../work/mlbl_b_learn_lang_shape/en_fr.log
+### 
+
+### Test on English
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en_fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+
+### Output
+# 
+
+### Test on French
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# 
+
+####################################################################################################
+### + Typology language vector
+
+
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector
+
+
+./train_mplm_learn_lang_shape.py --lang_list en_fr --batch_size 40 --save_network \
+                --lang_vector_path ${lang_vector_path} \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_plus_lang_vector.log
+
+./best_system.py --log_file ../work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr_plus_lang_vector.log 
+### 
+
+### Test on English
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+
+### Output
+# 
+
+### Test on French
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+#
+
+####################################################################################################
+### + Typology language vector + lang_id
+
+
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_id
+
+./train_mplm_learn_lang_shape.py --lang_list en_fr --batch_size 40 --save_network \
+                --lang_vector_path ${lang_vector_path} \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_plus_lang_id.log
+
+./best_system.py --log_file ../work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr_plus_lang_id.log 
+### Epoch 
+
+### Test on English
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+
+### Output
+
+### Test on French
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+
 
