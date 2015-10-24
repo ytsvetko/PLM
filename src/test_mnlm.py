@@ -25,7 +25,6 @@ args = parser.parse_args()
 start_symbol = "<s>"
 end_symbol = "</s>"
 
-
 def LoadData(corpus, symbol_table, ngram_order):
   # in format: text corpus, embeddings, n-gram order
   # out format: for each n-gram, x: n-1 embeddings appended; y: n's word 1-hot representation

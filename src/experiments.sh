@@ -102,25 +102,28 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_orig/no_lang_vector
 lang_vector_path=/usr1/home/ytsvetko/projects/mnlm/data/wals/lang_id/feat.
 network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_orig/lang_id
 
-#tmux1
 ./train_mplm.py --lang_list en_fr --batch_size 40 --save_network \
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_lang_id.log
 
-./best_system.py --log_file ../work/mlbl_b_orig/no_lang_vector/en_fr_lang_id.log
-### 
+./best_system.py --log_file ../work/mlbl_b_orig/lang_id/en_fr_lang_id.log
+### Epoch 78 Perplexity 5.96972064475
 
 ### Test on English
-./test_mlbl_b_orig.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_orig/no_lang_vector/en_fr/96 --lang_vector_path /usr1/home/ytsvetko/projects/mnlm/data/wals/zero/feat. --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+./test_mlbl_b_orig.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_orig/lang_id/en_fr/78 --lang_vector_path /usr1/home/ytsvetko/projects/mnlm/data/wals/lang_id/feat. --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 
 ### Output
-# 
+# Dev cost mean: 2.52047 perplexity: 5.73767245781
+# Test cost mean: 2.52374 perplexity: 5.75071461882
+
 
 ### Test on French
-./test_mlbl_b_orig.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_orig/no_lang_vector/en_fr/96 --lang_vector_path /usr1/home/ytsvetko/projects/mnlm/data/wals/zero/feat. --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mlbl_b_orig.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_orig/lang_id/en_fr/78 --lang_vector_path /usr1/home/ytsvetko/projects/mnlm/data/wals/lang_id/feat. --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-# 
+# Dev cost mean: 2.60405 perplexity: 6.07990879805
+# Test cost mean: 2.6065 perplexity: 6.09022638695
+
 
 ####################################################################################################
 
@@ -238,20 +241,24 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_tanh_sigmoid/lang_id
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_lang_id.log
                 
-./best_system.py --log_file ../work/mlbl_b_tanh_sigmoid/no_lang_vector/en_fr_lang_id.log 
-### Epoch 
+./best_system.py --log_file ../work/mlbl_b_tanh_sigmoid/lang_id/en_fr_lang_id.log 
+### Epoch 100 Perplexity 5.34114417752  
 
 ### Test on English
-./test_mnlm.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_tanh_sigmoid/no_lang_vector/en_fr/100 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en --lang_vector_path /usr1/home/ytsvetko/projects/mnlm/data/wals/zero/feat.
+./test_mnlm.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_tanh_sigmoid/lang_id/en_fr/100 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en --lang_vector_path /usr1/home/ytsvetko/projects/mnlm/data/wals/lang_id/feat. #--symbol_table /usr1/home/ytsvetko/projects/mnlm/work/symbol_table.mplm_learn_lang.en_ru_fr_ro_it_mt
 
 ### Output
-# 
+# Dev cost mean: 2.37972 perplexity: 5.20434769625
+# Test cost mean: 2.38068 perplexity: 5.2078355727
+
 
 ### Test on French
-./test_mnlm.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_tanh_sigmoid/no_lang_vector/en_fr/100 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr --lang_vector_path /usr1/home/ytsvetko/projects/mnlm/data/wals/zero/feat.    
+./test_mnlm.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_tanh_sigmoid/lang_id/en_fr/100 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr --lang_vector_path /usr1/home/ytsvetko/projects/mnlm/data/wals/lang_id/feat.    
 
 ### Output
-# 
+# Dev cost mean: 2.43442 perplexity: 5.40545230087
+# Test cost mean: 2.43703 perplexity: 5.41526338064
+
 ####################################################################################################
 
 
@@ -340,7 +347,6 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang
 
 network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_vector
 
-#tmux 5
 ./train_mplm_learn_lang.py --lang_list en_fr --batch_size 40 --save_network \
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_plus_lang_vector.log
@@ -365,41 +371,29 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_v
 ####################################################################################################
 ### + Typology language vector + lang_id
 
-#tmux3
-
 network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_id
 
 ./train_mplm_learn_lang.py --lang_list en_fr --batch_size 40 --save_network \
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_plus_lang_id.log
 
-./best_system.py --log_file ../work/mlbl_b_learn_lang/plus_lang_vector/en_fr_plus_lang_id.log 
-### Epoch 
+./best_system.py --log_file ../work/mlbl_b_learn_lang/plus_lang_id/en_fr_plus_lang_id.log 
+### Epoch 93 Perplexity 5.3393244158
+
 
 ### Test on English
-./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_vector/en_fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_id/en_fr/93 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 
 ### Output
+#Dev cost mean: 2.37717 perplexity: 5.19516170547
+#Test cost mean: 2.3717 perplexity: 5.17550389765
 
 ### Test on French
-./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_vector/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_id/en_fr/93 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Dev cost mean: 2.43487 perplexity: 5.4071587742
+# Test cost mean: 2.43737 perplexity: 5.4165235773
 
 
 
@@ -411,79 +405,81 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/plus_lang_i
 ####################
 lang_vector_path=/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.
 network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape
-#tmux0
-
 
 ./train_mplm_learn_lang_shape.py --lang_list en --batch_size 20 --save_network \
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en.log
 
 ./best_system.py --log_file  ../work/mlbl_b_learn_lang_shape/en.log
-### 
+### Epoch 100 Perplexity 4.99492639594
 
 ### Test on English
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en/?? \
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en/100 \
                  --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
                  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 ### Output
-# 
+# Dev cost mean: 2.32046 perplexity: 4.99492639594
+# Test cost mean: 2.31732 perplexity: 4.98407023892
 
 ### Test on French
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en/100 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-# 
+# Dev cost mean: 6.48465 perplexity: 89.5515685613
+# Test cost mean: 6.47613 perplexity: 89.0244682824
+
 
 ####################################################################################################
-
-#tmux5
 
 ./train_mplm_learn_lang_shape.py --lang_list fr --batch_size 20 --save_network \
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/fr.log
                 
 ./best_system.py --log_file ../work/mlbl_b_learn_lang_shape/fr.log
-###
+### Epoch 97 Perplexity 5.31637835903
 
 ### Test on English
-./test_mplm_learn_lang.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/fr/97 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 
 ### Output
-# 
+# Dev cost mean: 6.9452 perplexity: 123.229167856
+# Test cost mean: 6.92441 perplexity: 121.465854794
 
 ### Test on French
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/fr/97 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-# 
+# Dev cost mean: 2.41044 perplexity: 5.31637835903
+# Test cost mean: 2.41335 perplexity: 5.32710168821
 
 ####################################################################################################
-
-#tmux4
 
 ./train_mplm_learn_lang_shape.py --lang_list en_fr --batch_size 40 --save_network \
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr.log
                 
 ./best_system.py --log_file ../work/mlbl_b_learn_lang_shape/en_fr.log
-### 
+### Epoch 93 Perplexity 5.33315578768
 
 ### Test on English
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en_fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en_fr/93 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 
 ### Output
-# 
+# Dev cost mean: 2.37645 perplexity: 5.19258669957
+# Test cost mean: 2.37435 perplexity: 5.18503042699
 
 ### Test on French
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/en_fr/93 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-# 
+# Dev cost mean: 2.43276 perplexity: 5.39925010294
+# Test cost mean: 2.43353 perplexity: 5.40213649337
 
 ####################################################################################################
-### + Typology language vector
+### + language id
 
-
+# tmux1
+lang_vector_path=/usr1/home/ytsvetko/projects/mnlm/data/wals/lang_id/feat.
 network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector
 
 
@@ -507,26 +503,153 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_
 #
 
 ####################################################################################################
-### + Typology language vector + lang_id
 
 
-network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_id
 
-./train_mplm_learn_lang_shape.py --lang_list en_fr --batch_size 40 --save_network \
-                --lang_vector_path ${lang_vector_path} \
-                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_plus_lang_id.log
 
-./best_system.py --log_file ../work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr_plus_lang_id.log 
-### Epoch 
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################################################################################################
+####################
+# Modality-Biased Log-Bilinear Model 
+# + tanh activation
+# + learn language vector
+# + attention model
+####################
+# tmux2
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention
+
+./train_mplm_with_attention.py --lang_list en --batch_size 20 --save_network \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en.log
+
+./best_system.py --log_file  ../work/mplm_with_attention/en.log
+### 
 
 ### Test on English
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
-
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? \
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 ### Output
+# 
 
 ### Test on French
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
+# 
+####################################################################################################
+# tmux3
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention
+
+./train_mplm_with_attention.py --lang_list fr --batch_size 20 --save_network \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/fr.log
+
+./best_system.py --log_file  ../work/mplm_with_attention/fr.log
+### 
+
+### Test on English
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? \
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+# 
+
+### Test on French
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# 
+####################################################################################################
+# tmux4
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention
+
+./train_mplm_with_attention.py --lang_list en_fr --batch_size 20 --save_network \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr.log
+
+./best_system.py --log_file  ../work/mplm_with_attention/en_fr.log
+### 
+
+### Test on English
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? \
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+# 
+
+### Test on French
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# 
+
+####################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################################################################################################
+####################################################################################################
+# LOANWORDS
+lang_vector_path=/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang
+
+#tmux6
+./train_mplm_learn_lang.py --lang_list ro_fr --batch_size 40 --save_network \
+                --lang_vector_path ${lang_vector_path} \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/ro_fr.log
+                
+./best_system.py --log_file ../work/mlbl_b_learn_lang/ro_fr.log
+
+./generate_word_vectors.py  --lang ro
+./generate_word_vectors.py  --lang fr
+
+./generate_word_vectors.py --pron_dict /usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.ro --out_word_vectors /usr1/home/ytsvetko/projects/mnlm/data/loanwords/ro_fr/pron-dict.vectors.ro --in_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/??/vectors --in_softmax_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/??/softmax_vectors
+
+./generate_word_vectors.py --pron_dict /usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.fr --out_word_vectors /usr1/home/ytsvetko/projects/mnlm/data/loanwords/ro_fr/pron-dict.vectors.fr --in_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro-fr/??/vectors --in_softmax_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/??/softmax_vectors
+
+./loanwords.py  --src_tgt_pairs ../data/loanwords/ro-fr/test.en-ro-fr --src_vectors ../data/loanwords/ro-fr/pron-dict.vectors.ro --tgt_vectors ../data/loanwords/ro-fr/pron-dict.vectors.fr --num_closest 1 2>&1 | tee ../data/loanwords/ro-fr/ro-fr.loanwords.log
+
+./train_mplm_learn_lang.py --lang_list mt_it --batch_size 40 --save_network \
+                --lang_vector_path ${lang_vector_path} \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/mt_it.log
+                
+./best_system.py --log_file ../work/mlbl_b_learn_lang/mt_it.log
+# Epoch 100 Perplexity 4.28188938896
+
+./generate_word_vectors.py  --pron_dict /usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.mt --out_word_vectors /usr1/home/ytsvetko/projects/mnlm/data/loanwords/pron-dict.vectors.mt --in_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/mt_it/100/vectors --in_softmax_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/mt_it/100/softmax_vectors
+
+./generate_word_vectors.py  --pron_dict /usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.it --out_word_vectors /usr1/home/ytsvetko/projects/mnlm/data/loanwords/pron-dict.vectors.it --in_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/mt_it/100/vectors --in_softmax_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/mt_it/100/softmax_vectors
+
+
+./loanwords.py  --src_tgt_pairs ../data/loanwords/mt-it/test.en-mt-it --src_vectors ../data/loanwords/mt-it/pron-dict.vectors.mt --tgt_vectors ../data/loanwords/mt-it/pron-dict.vectors.it --num_closest 10 --out_filename ../data/loanwords/mt-it/mlbl_b_learn_lang.phone-levenshtein 2>&1 | tee ../data/loanwords/mt-it/mt-it.loanwords.log
+# Vectors: Total: 27, Correct: 17, Accuracy: 0.6296296296296297  
+# Softmax vectors: Total: 27, Correct: 10, Accuracy: 0.37037037037037035  
+
 
 

@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/zero/en/100")
 parser.add_argument('--lang_list', default="en")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
-parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.mplm_learn_lang.en_ru_fr_ro_it_mt")
+parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.mplm_learn_lang_shape.en_ru_fr_ro_it_mt")
 
 parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en")
 parser.add_argument('--test_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en")

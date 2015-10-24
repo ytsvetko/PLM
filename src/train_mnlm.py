@@ -29,9 +29,8 @@ parser.add_argument('--save_network', action='store_true', default=False)
 parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.en_ru_fr_ro_it_mt")
 args = parser.parse_args()
 
-start_symbol = "pau"
-end_symbol = "pau"
-
+start_symbol = "<s>"
+end_symbol = "</s>"
 
 def LoadData(corpus, symbol_table, ngram_order):
   # in format: text corpus, embeddings, n-gram order
