@@ -18,7 +18,16 @@ class Activation:
     def fprop(self, x, bias=None):
         return self.func(x)
 
+class Embeddings(object):
+    def __init__(self, vocab_size, vector_size, scale=0.08):
+        self.M = sharedX(rng.randn(vocab_size, vector_size) * scale)
+        self.params = [self.M]
 
+    def fprop(self, ngram_indexes, bias=None):
+        emb = self.M[ngram_indexes]
+        # concatenate ngrams into one vector. the result is a matrix because it is a batch.
+        return emb.reshape((ngram_indexes.shape[0], ngram_indexes.shape[1] * self.M.shape[1]))
+  
 class Linear:
     def __init__(self, vis_dim, hid_dim, scale=0.08):
         self.W = sharedX(rng.randn(vis_dim, hid_dim) * scale)
