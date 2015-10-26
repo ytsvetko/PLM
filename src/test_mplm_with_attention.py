@@ -13,13 +13,13 @@ parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/
 parser.add_argument('--lang_list', default="en")
 parser.add_argument('--lang_vector_path', default="/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.")
 parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.mplm_learn_lang.en_ru_fr_ro_it_mt")
-
 parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en")
 parser.add_argument('--test_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en")
-
 parser.add_argument('--vector_size', type=int, default=90)
 parser.add_argument('--ngram_order', type=int, default=4)
 parser.add_argument('--batch_size', type=int, default=100)
+parser.add_argument('--alpha', type=float, default=1.0)
+parser.add_argument('--betta', type=float, default=0.0)
 args = parser.parse_args()
 
 start_symbol = "<s>"
@@ -88,7 +88,7 @@ def main():
           test_x, test_y, lang, test_lang_feat)
 
   all_lang_symbol_indexes = GetLanguageList(args.symbol_table.split(".")[-1].split("_"), symbol_table)
-  network = mplm.MNLM(symbol_table.Size(), args.vector_size, args.ngram_order, all_lang_symbol_indexes)
+  network = mplm.MNLM(symbol_table.Size(), args.vector_size, args.ngram_order, all_lang_symbol_indexes, args.alpha, args.betta)
   
   network.LoadModel(args.network_dir)
   

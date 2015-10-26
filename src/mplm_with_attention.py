@@ -21,7 +21,7 @@ import layer
 import learning_method
 
 class MNLM(object):
-  def __init__(self, vocab_size, vector_size, context_size, all_lang_symbol_indexes):
+  def __init__(self, vocab_size, vector_size, context_size, all_lang_symbol_indexes, alpha=1, betta=0):
     # key = language symbol index, value = index in the all_lang_symbol_indexes list.
     self.lang_index_dict = {lang_ind: i for i, lang_ind in enumerate(all_lang_symbol_indexes)}
     self.vectors = numpy.zeros([vocab_size, vector_size])  # Current vectors
@@ -52,21 +52,21 @@ class MNLM(object):
     symbolic_batch_size = self.t.shape[0]
     # Get log prob of each gold label in the batch.
     log_prob_of_labels = self.log_prob_fn[T.arange(symbolic_batch_size), self.t]
-    self.cost_fn1 = - T.mean(log_prob_of_labels)
+    self.cost_fn_lm = - T.mean(log_prob_of_labels)
     
     # softmax_tanh_result_dot_langs.shape = (batch_size, #languages)
     attention_softmax_logp = T.log(attention_layer.softmax_tanh_result_dot_langs)
     attention_log_prob_of_lang = attention_softmax_logp[T.arange(symbolic_batch_size), self.lang_indexes]
-    self.cost_fn2 = - T.mean(attention_log_prob_of_lang)
+    self.cost_fn_lang_id = - T.mean(attention_log_prob_of_lang)
     
-    self.cost_fn = self.cost_fn1 * 0.9 + self.cost_fn2 * 0.1
+    self.cost_fn = self.cost_fn_lm * alpha + self.cost_fn_lang_id * betta
 
     ## Collect Parameters
     self.params = self.GetParams_()
 
     self.softmax_probs = theano.function(inputs=[self.x, self.lang_indexes], outputs=self.prob_fn,
                                          allow_input_downcast=True, on_unused_input='ignore')
-    self.test = theano.function(inputs=[self.x, self.t, self.lang_indexes], outputs=self.cost_fn,
+    self.test = theano.function(inputs=[self.x, self.t, self.lang_indexes], outputs=self.cost_fn_lm,
                                 allow_input_downcast=True, on_unused_input='ignore')
 
   def TrainEpoch(self, train_x, train_y, train_lang_indexes, batch_size, lr=0.01):

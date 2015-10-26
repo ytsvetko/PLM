@@ -20,10 +20,12 @@ parser.add_argument('--batch_size', type=int, default=100)
 parser.add_argument('--num_epochs', type=int, default=100)
 parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang")
 parser.add_argument('--out_vectors', default="vectors")
-parser.add_argument('--out_softmax_vectors', default="softmax_vectors")
+parser.add_argument('--out_softmax_vectors')
 parser.add_argument('--load_network', action='store_true', default=False)
 parser.add_argument('--save_network', action='store_true', default=False)
 parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.mplm_learn_lang.en_ru_fr_ro_it_mt")
+parser.add_argument('--alpha', type=float, default=1.0)
+parser.add_argument('--betta', type=float, default=0.0)
 args = parser.parse_args()
 
 start_symbol = "<s>"
@@ -93,7 +95,7 @@ def main():
         dev_x, dev_y, lang, dev_lang)
 
   all_lang_symbol_indexes = GetLanguageList(args.symbol_table.split(".")[-1].split("_"), symbol_table)
-  network = mplm.MNLM(symbol_table.Size(), args.vector_size, args.ngram_order, all_lang_symbol_indexes)
+  network = mplm.MNLM(symbol_table.Size(), args.vector_size, args.ngram_order, all_lang_symbol_indexes, args.alpha, args.betta)
   if args.load_network:
     network.LoadModel(args.network_dir)
   print "Training"
