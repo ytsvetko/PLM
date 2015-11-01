@@ -41,17 +41,15 @@ def LoadVectors(filename):
   pronunciations = collections.defaultdict(list)
   vectors_r = collections.defaultdict(list)
   vectors_softmax = collections.defaultdict(list)
-  vectors_softmax_context = collections.defaultdict(list)
   for line in open(filename):
     tokens = line.strip().split(" ||| ")
-    if len(tokens) != 5:
+    if len(tokens) != 4:
       continue
-    word, pron, word_vector_softmax, word_vector_context_softmax, word_vector_r = tokens
+    word, pron, word_vector_softmax, word_vector_r = tokens
     pronunciations[word].append(pron)      
     vectors_r[pron].append(word_vector_r)      
     vectors_softmax[pron].append(word_vector_softmax)      
-    vectors_softmax_context[pron].append(word_vector_context_softmax)      
-  return pronunciations, vectors_r, vectors_softmax, vectors_softmax_context
+  return pronunciations, vectors_r, vectors_softmax
 
 def Flatten(l):
   return [item for sublist in l for item in sublist]
@@ -100,16 +98,19 @@ def FindClosest(src_pronunciations, tgt_pronunciations, src_vectors, tgt_vectors
   return result
   
 def main():
-  src_pronunciations, src_vectors_r, src_vectors_softmax, src_vectors_softmax_context = LoadVectors(args.src_vectors)
-  tgt_pronunciations, tgt_vectors_r, tgt_vectors_softmax, tgt_vectors_softmax_context = LoadVectors(args.tgt_vectors)
+  src_pronunciations, src_vectors_r, src_vectors_softmax = LoadVectors(args.src_vectors)
+  tgt_pronunciations, tgt_vectors_r, tgt_vectors_softmax = LoadVectors(args.tgt_vectors)
 
   if args.out_filename == sys.stdout:
     out_f = sys.stdout
   else:
     out_f = open(args.out_filename, "w")
 
+  correct = 0
+  total = 0
+    
   for line in open(args.src_tgt_pairs):
-    src_words, tgt_words = line.strip().split(" ||| ")
+    en, src_words, tgt_words = line.strip().split(" ||| ")
     src_words = src_words.split()
     tgt_words = tgt_words.split()
     src_word_set = set(src_words)
@@ -122,32 +123,24 @@ def main():
         tgt_word_set.remove(w) 
     if len(src_word_set) == 0 or len(tgt_word_set) == 0:
       continue
+    total += 1
     src_word_set_pronunciations = []
     for w in src_word_set:
       src_word_set_pronunciations.append(src_pronunciations[w])
     src_word_set_pronunciations = Flatten(src_word_set_pronunciations) 
     tgt_closest_words_r = FindClosest(src_word_set_pronunciations, tgt_pronunciations, 
                                   src_vectors_r, tgt_vectors_r, args.num_closest)
-
-    #print("Softmax matrix")
-    #tgt_closest_words_softmax = FindClosest(src_pronunciations[src_word], tgt_pronunciations, 
+    #tgt_closest_words_r = FindClosest(src_word_set_pronunciations, tgt_pronunciations, 
     #                              src_vectors_softmax, tgt_vectors_softmax, args.num_closest)
-
-    #print("Softmax context matrix")
-    #tgt_closest_words_softmax_context = FindClosest(src_pronunciations[src_word], tgt_pronunciations, 
-    #                              src_vectors_softmax_context, tgt_vectors_softmax_context, args.num_closest)
     found = False
-    for tgt_word_i in tgt_closest_words_r:
-      if tgt_word_i in tgt_word_set:
+    for tgt_word_i in tgt_word_set:
+      if tgt_closest_words_r[0] == tgt_word_i:
         found = True
+        correct += 1
     out_f.write("{} ||| {} ||| {}\n".format(" ".join(src_words), " ".join(tgt_closest_words_r), found))
+    sys.stdout.flush()
+  out_f.write("Total: {}, Correct: {}, Accuracy: {}\n".format(total, correct, correct/total))
     
-    #found = False
-    #for tgt_word_i in tgt_closest_words_softmax_context:
-    #  if tgt_word_i == tgt_word:
-    #    found = True
-    #out_f.write("{} ||| {} ||| {}\n".format(src_word, " ".join(tgt_closest_words_softmax_context), found))
-
 if __name__=='__main__':
   main()
 

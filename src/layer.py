@@ -18,6 +18,18 @@ class Activation:
   def fprop(self, x, bias=None):
     return self.func(x)
 
+class Concatenation(object):
+  def __init__(self, out_lang_indexes, embeddings_layer):
+    self.lang_vectors = embeddings_layer.M[out_lang_indexes]
+    self.params = []
+
+  def fprop(self, tanh_result, bias=None):
+    # tanh_result.shape = (batch_size, vector_size)
+    # self.lang_vectors.shape = (#languages, vector_size)
+    # result.shape = (batch_size, 2 x vector_size)
+    return T.concatenate([tanh_result, self.lang_vectors], axis=1)
+
+
 class Embeddings(object):
   def __init__(self, vocab_size, vector_size, scale=0.08):
     self.M = sharedX(rng.randn(vocab_size, vector_size) * scale)
@@ -27,6 +39,8 @@ class Embeddings(object):
     emb = self.M[ngram_indexes]
     # concatenate ngrams into one vector. the result is a matrix because it is a batch.
     return emb.reshape((ngram_indexes.shape[0], ngram_indexes.shape[1] * self.M.shape[1]))
+
+
 
 class Attention(object):
   def __init__(self, all_lang_symbol_indexes, embeddings_layer):

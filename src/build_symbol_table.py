@@ -7,7 +7,7 @@ import symbol_table as st
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work")
-parser.add_argument('--lang_list', default="en_ru_fr_ro_it_mt")
+parser.add_argument('--lang_list', default="en_ru_fr_ro_it_mt_sw_hi_ar")
 parser.add_argument('--train_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/train/pron-dict.")
 parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.")
 parser.add_argument('--test_path', default="/usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.")
@@ -21,9 +21,15 @@ args = parser.parse_args()
 start_symbol = "<s>"
 end_symbol = "</s>"
 
+insert_symbol = "INS"
+delete_symbol = "DEL"
+
+SPECIAL_CHARACTERS = [start_symbol, end_symbol, insert_symbol, delete_symbol]
+
 def AddToSymbolTable(corpus, symbol_table):
-  symbol_table.WordIndex(start_symbol)
-  symbol_table.WordIndex(end_symbol)
+  for symbol in SPECIAL_CHARACTERS:
+    symbol_table.WordIndex(symbol)
+
   for line in codecs.open(corpus, "r", "utf-8"):
     for word in line.split():
       symbol_table.WordIndex(word)

@@ -478,7 +478,6 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape
 ####################################################################################################
 ### + language id
 
-# tmux1
 lang_vector_path=/usr1/home/ytsvetko/projects/mnlm/data/wals/lang_id/feat.
 network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector
 
@@ -488,21 +487,116 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr_plus_lang_vector.log
 
 ./best_system.py --log_file ../work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr_plus_lang_vector.log 
-### 
+### Epoch 99 Perplexity 5.3249734214
 
 ### Test on English
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/?? --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/99 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 
 ### Output
-# 
+# Dev cost mean: 2.37467 perplexity: 5.18618562154
+# Test cost mean: 2.37295 perplexity: 5.18000900893
 
 ### Test on French
-./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_learn_lang_shape.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_lang_vector/en_fr/99 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-#
+# Dev cost mean: 2.43033 perplexity: 5.39018506334
+# Test cost mean: 2.43181 perplexity: 5.39571428085
 
 ####################################################################################################
+
+
+
+
+
+
+
+
+
+####################################################################################################
+####################
+# Modality-Biased Log-Bilinear Model 
+# + tanh activation
+# + learn language vector
+# + input embedding matrix
+####################
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings
+
+./train_mplm_with_embeddings.py --lang_list en --batch_size 20 --save_network \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en.log
+
+./best_system.py --log_file  ../work/mplm_with_embeddings/en.log
+
+### Test on English
+./test_mplm_with_embeddings.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings/en/97 \
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+# Dev cost mean: 2.31173 perplexity: 4.96479107129
+# Test cost mean: 2.3073 perplexity: 4.94957080255
+
+### Test on French
+./test_mplm_with_embeddings.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings/en/97 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# Dev cost mean: 6.48081 perplexity: 89.3136768936
+# Test cost mean: 6.48543 perplexity: 89.6004192984
+####################################################################################################
+
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings
+
+./train_mplm_with_embeddings.py --lang_list fr --batch_size 20 --save_network \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/fr.log
+
+./best_system.py --log_file  ../work/mplm_with_embeddings/fr.log
+### Epoch 100 Perplexity 5.2940829447
+
+
+### Test on English
+# Dev cost mean: 5.76121 perplexity: 54.2370791168
+# Test cost mean: 5.74588 perplexity: 53.6637273344
+
+
+./test_mplm_with_embeddings.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings/fr/100 \
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+
+
+### Test on French
+./test_mplm_with_embeddings.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings/fr/100 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# Dev cost mean: 2.40438 perplexity: 5.2940829447
+# Test cost mean: 2.40665 perplexity: 5.30241500228
+
+####################################################################################################
+
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings
+
+./train_mplm_with_embeddings.py --lang_list en_fr --batch_size 20 --save_network \
+                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr.log
+
+./best_system.py --log_file  ../work/mplm_with_embeddings/en_fr.log
+### Epoch 99 Perplexity 5.2961279709
+
+### Test on English
+./test_mplm_with_embeddings.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings/en_fr/99\
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+# Dev cost mean: 2.36609 perplexity: 5.15543311531
+# Test cost mean: 2.36421 perplexity: 5.14869578333
+
+
+### Test on French
+./test_mplm_with_embeddings.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_embeddings/en_fr/99 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# Dev cost mean: 2.42285 perplexity: 5.36231102259
+# Test cost mean: 2.42657 perplexity: 5.37613535688
+
+
 
 
 
@@ -527,71 +621,201 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang_shape/plus_
 # + learn language vector
 # + attention model
 ####################
-# tmux2
-network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention
+# alpha = 0.9, betta = 0.1
+
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1
 
 ./train_mplm_with_attention.py --lang_list en --batch_size 20 --save_network \
-                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en.log
+                --network_dir ${network_dir} --alpha 0.9 --betta 0.1  2>&1 | tee ${network_dir}/en.log
 
-./best_system.py --log_file  ../work/mplm_with_attention/en.log
-### 
+./best_system.py --log_file  ../work/mplm_with_attention_alpha_0.9_betta_0.1/en.log
+### Epoch 100 Perplexity 4.96578723058
+
 
 ### Test on English
-./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? \
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1/en/100 \
                  --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
                  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 ### Output
-# 
+# Dev cost mean: 2.31202 perplexity: 4.96578723058
+# Test cost mean: 2.30909 perplexity: 4.95571259641
 
 ### Test on French
-./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1/en/100 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-# 
+# Dev cost mean: 6.5486 perplexity: 93.6105510493
+# Test cost mean: 6.55102 perplexity: 93.7680442426
+
 ####################################################################################################
-# tmux3
-network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1
 
 ./train_mplm_with_attention.py --lang_list fr --batch_size 20 --save_network \
-                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/fr.log
+                --network_dir ${network_dir}  --alpha 0.9 --betta 0.1   2>&1 | tee ${network_dir}/fr.log
 
-./best_system.py --log_file  ../work/mplm_with_attention/fr.log
-### 
+./best_system.py --log_file  ../work/mplm_with_attention_alpha_0.9_betta_0.1/fr.log
+### Epoch 95 Perplexity 5.2921217918
 
 ### Test on English
-./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? \
+
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1/fr/95 \
                  --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
                  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 ### Output
-# 
+# Dev cost mean: 5.90859 perplexity: 60.0707310739
+# Test cost mean: 5.89987 perplexity: 59.708648615
+
 
 ### Test on French
-./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1/fr/95 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-# 
+# Dev cost mean: 2.40385 perplexity: 5.2921217918
+# Test cost mean: 2.40642 perplexity: 5.30158786539
+
+
 ####################################################################################################
-# tmux4
-network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1
 
 ./train_mplm_with_attention.py --lang_list en_fr --batch_size 20 --save_network \
-                --network_dir ${network_dir}  2>&1 | tee ${network_dir}/en_fr.log
+                --network_dir ${network_dir}  --alpha 0.9 --betta 0.1  2>&1 | tee ${network_dir}/en_fr.log
 
-./best_system.py --log_file  ../work/mplm_with_attention/en_fr.log
-### 
+./best_system.py --log_file  ../work/mplm_with_attention_alpha_0.9_betta_0.1/en_fr.log
+### Epoch 98 Perplexity 5.2949762886
 
 ### Test on English
-./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? \
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1/en_fr/98\
                  --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
                  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
 ### Output
-# 
+# Dev cost mean: 2.36409 perplexity: 5.14828993474
+# Test cost mean: 2.36354 perplexity: 5.14630114366
 
 ### Test on French
-./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention/en/?? --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1/en_fr/98 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
 
 ### Output
-# 
+# Dev cost mean: 2.42332 perplexity: 5.36402781067
+# Test cost mean: 2.42602 perplexity: 5.37408963285
+
+
+
+####################################################################################################
+
+
+
+####################
+# Modality-Biased Log-Bilinear Model 
+# + tanh activation
+# + learn language vector
+# + attention model
+####################
+# alpha = 0.7, betta = 0.3
+
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.7_betta_0.3
+
+./train_mplm_with_attention.py --lang_list en --batch_size 20 --save_network \
+                --network_dir ${network_dir} --alpha 0.7 --betta 0.3  2>&1 | tee ${network_dir}/en.log
+
+./best_system.py --log_file  ../work/mplm_with_attention_alpha_0.7_betta_0.3/en.log
+### Epoch 100 Perplexity 4.96285430242
+
+
+### Test on English
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.7_betta_0.3/en/100 \
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+# Dev cost mean: 2.31117 perplexity: 4.96285430242
+# Test cost mean: 2.30819 perplexity: 4.95263010733
+
+### Test on French
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.7_betta_0.3/en/100 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# Dev cost mean: 6.85393 perplexity: 115.674430173
+# Test cost mean: 6.85563 perplexity: 115.811421881
+
+####################################################################################################
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.7_betta_0.3
+
+
+./train_mplm_with_attention.py --lang_list fr --batch_size 20 --save_network \
+                --network_dir ${network_dir}  --alpha 0.7 --betta 0.3   2>&1 | tee ${network_dir}/fr.log
+
+./best_system.py --log_file  ../work/mplm_with_attention_alpha_0.7_betta_0.3/fr.log
+###Epoch 93 Perplexity 5.28656855388
+
+
+### Test on English
+
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1/fr/93 \
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+# Dev cost mean: 6.09041 perplexity: 68.1390193274
+# Test cost mean: 6.07929 perplexity: 67.615709797
+
+
+### Test on French
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.9_betta_0.1/fr/93 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# Dev cost mean: 2.40233 perplexity: 5.28656855388
+# Test cost mean: 2.40498 perplexity: 5.29629164213
+
+####################################################################################################
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.7_betta_0.3
+
+./train_mplm_with_attention.py --lang_list en_fr --batch_size 20 --save_network \
+                --network_dir ${network_dir}  --alpha 0.7 --betta 0.3  2>&1 | tee ${network_dir}/en_fr.log
+
+0
+
+
+./best_system.py --log_file  ../work/mplm_with_attention_alpha_0.7_betta_0.3/en_fr.log
+###Epoch 100 Perplexity 5.29937608352
+
+### Test on English
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.7_betta_0.3/en_fr/100\
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en
+### Output
+# Dev cost mean: 2.36524 perplexity: 5.15238902865
+# Test cost mean: 2.36439 perplexity: 5.14935865308
+
+### Test on French
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_0.7_betta_0.3/en_fr/100 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr
+
+### Output
+# Dev cost mean: 2.42454 perplexity: 5.36856571811
+# Test cost mean: 2.42813 perplexity: 5.38195789208
+####################################################################################################
+# alpha = 1, betta = 0
+
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_1_betta_0
+
+./train_mplm_with_attention.py --lang_list en_fr --batch_size 20 --save_network \
+                --network_dir ${network_dir} --alpha 1.0 --betta 0.0 2>&1 | tee ${network_dir}/en_fr.log
+
+./best_system.py --log_file  ../work/mplm_with_attention_alpha_1_betta_0/en_fr.log
+### Epoch 96 Perplexity 4.2334016959
+
+### Test on English
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_1_betta_0/en_fr/96\
+                 --lang_list en --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.en \
+                 --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.en  --alpha 1.0 --betta 0.0 
+### Output
+#Dev cost mean: 2.36255 perplexity: 5.1427983857
+#Test cost mean: 2.36359 perplexity: 5.14650611184
+
+
+### Test on French
+./test_mplm_with_attention.py --network_dir /usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention_alpha_1_betta_0/en_fr/96 --lang_list fr --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.fr --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.fr  --alpha 1.0 --betta 0.0 
+
+### Output
+# Dev cost mean: 2.42112 perplexity: 5.35586800209
+# Test cost mean: 2.42387 perplexity: 5.36609187438
 
 ####################################################################################################
 
@@ -600,41 +824,25 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_with_attention
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+###################################################################################################
 ####################################################################################################
-####################################################################################################
-# LOANWORDS
+# LOANWORDS1
 lang_vector_path=/usr1/home/ytsvetko/projects/mnlm/data/wals/feat.
 network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang
 
-#tmux6
 ./train_mplm_learn_lang.py --lang_list ro_fr --batch_size 40 --save_network \
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/ro_fr.log
                 
 ./best_system.py --log_file ../work/mlbl_b_learn_lang/ro_fr.log
 
-./generate_word_vectors.py  --lang ro
-./generate_word_vectors.py  --lang fr
+./generate_word_vectors.py --pron_dict /usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.ro --out_word_vectors /usr1/home/ytsvetko/projects/mnlm/data/loanwords/ro-fr/pron-dict.vectors.ro --in_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/92/vectors --in_softmax_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/92/softmax_vectors
 
-./generate_word_vectors.py --pron_dict /usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.ro --out_word_vectors /usr1/home/ytsvetko/projects/mnlm/data/loanwords/ro_fr/pron-dict.vectors.ro --in_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/??/vectors --in_softmax_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/??/softmax_vectors
+./generate_word_vectors.py --pron_dict /usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.fr --out_word_vectors /usr1/home/ytsvetko/projects/mnlm/data/loanwords/ro-fr/pron-dict.vectors.fr --in_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/92/vectors --in_softmax_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/92/softmax_vectors
 
-./generate_word_vectors.py --pron_dict /usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.fr --out_word_vectors /usr1/home/ytsvetko/projects/mnlm/data/loanwords/ro_fr/pron-dict.vectors.fr --in_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro-fr/??/vectors --in_softmax_vectors /usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang/ro_fr/??/softmax_vectors
+./loanwords.py  --src_tgt_pairs ../data/loanwords/ro-fr/test.en-ro-fr --src_vectors ../data/loanwords/ro-fr/pron-dict.vectors.ro --tgt_vectors ../data/loanwords/ro-fr/pron-dict.vectors.fr --num_closest 10 --out_filename ../data/loanwords/ro-fr/mlbl_b_learn_lang.phone-levenshtein 2>&1 | tee ../data/loanwords/ro-fr/ro-fr.loanwords.log
 
-./loanwords.py  --src_tgt_pairs ../data/loanwords/ro-fr/test.en-ro-fr --src_vectors ../data/loanwords/ro-fr/pron-dict.vectors.ro --tgt_vectors ../data/loanwords/ro-fr/pron-dict.vectors.fr --num_closest 1 2>&1 | tee ../data/loanwords/ro-fr/ro-fr.loanwords.log
-
+#############################################
 ./train_mplm_learn_lang.py --lang_list mt_it --batch_size 40 --save_network \
                 --lang_vector_path ${lang_vector_path} \
                 --network_dir ${network_dir}  2>&1 | tee ${network_dir}/mt_it.log
@@ -650,6 +858,433 @@ network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang
 ./loanwords.py  --src_tgt_pairs ../data/loanwords/mt-it/test.en-mt-it --src_vectors ../data/loanwords/mt-it/pron-dict.vectors.mt --tgt_vectors ../data/loanwords/mt-it/pron-dict.vectors.it --num_closest 10 --out_filename ../data/loanwords/mt-it/mlbl_b_learn_lang.phone-levenshtein 2>&1 | tee ../data/loanwords/mt-it/mt-it.loanwords.log
 # Vectors: Total: 27, Correct: 17, Accuracy: 0.6296296296296297  
 # Softmax vectors: Total: 27, Correct: 10, Accuracy: 0.37037037037037035  
+
+
+
+####################################################################################################
+####################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################################################################################################
+####################################################################################################
+
+####################
+# Modality-Biased Log-Bilinear Model 
+# + tanh activation
+# + learn language vector
+# + append language vector to context layer
+# + context = 2 on left, 2 on right
+####################
+### English
+# tmux
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context
+lang=en
+
+./train_mplm_context.py --lang_list ${lang} --batch_size 20 --save_network \
+                --network_dir ${network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### Epoch 93 Perplexity 3.18260286183
+
+
+### Test on English
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/93 \
+  --lang_list ${lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${lang}
+### Output
+# Dev cost mean: 1.67021 perplexity: 3.18260286183
+# Test cost mean: 1.66054 perplexity: 3.16135742628
+
+
+####################################################################################################
+### Swahili--Arabic
+# tmux
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context
+src_lang=sw
+tgt_lang=ar
+lang=${src_lang}_${tgt_lang}
+
+./train_mplm_context.py --lang_list ${lang} --batch_size 40 --save_network \
+                --network_dir ${network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### Epoch 14 Perplexity 3.16638235683 ### KILLED 
+
+
+### Test on Swahili
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/14 \
+  --lang_list ${src_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${src_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${src_lang}
+### Output
+# Dev cost mean: 1.47971 perplexity: 2.78892502048
+# Test cost mean: 1.48581 perplexity: 2.80074338281
+
+
+### Test on Arabic
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/14 \
+  --lang_list ${tgt_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${tgt_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${tgt_lang}
+### Output
+# Dev cost mean: 1.73545 perplexity: 3.32984365406
+# Test cost mean: 1.73589 perplexity: 3.33084340078
+
+####################################################################################################
+### Romanian--French
+# tmux
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context
+src_lang=ro
+tgt_lang=fr
+lang=${src_lang}_${tgt_lang}
+
+./train_mplm_context.py --lang_list ${lang} --batch_size 40 --save_network \
+                --network_dir ${network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### Epoch 58 Perplexity 2.63213143594  ### KILLED 
+
+### Test on Romanian
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/58 \
+  --lang_list ${src_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${src_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${src_lang}
+### Output
+# Dev cost mean: 1.12342 perplexity: 2.17862926478
+# Test cost mean: 1.12076 perplexity: 2.17460811044
+
+### Test on French
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/58 \
+  --lang_list ${tgt_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${tgt_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${tgt_lang}
+### Output
+# Dev cost mean: 2.12155 perplexity: 4.35162613108
+# Test cost mean: 2.12867 perplexity: 4.37313555866
+
+
+####################################################################################################
+### Maltese--Italian
+# tmux
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context
+src_lang=mt
+tgt_lang=it
+lang=${src_lang}_${tgt_lang}
+
+./train_mplm_context.py --lang_list ${lang} --batch_size 40 --save_network \
+                --network_dir ${network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### Epoch 96 Perplexity 2.94116536554
+
+
+### Test on Maltese
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/96 \
+  --lang_list ${src_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${src_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${src_lang}
+### Output
+# Dev cost mean: 1.50448 perplexity: 2.83723257166
+# Test cost mean: 1.51315 perplexity: 2.85431699365
+
+### Test on Italian
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/100 \
+  --lang_list ${tgt_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${tgt_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${tgt_lang}
+### Output
+# Dev cost mean: 1.62482 perplexity: 3.08404269062
+# Test cost mean: 1.62846 perplexity: 3.09182311597
+
+
+####################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################################################################################################
+####################################################################################################
+
+####################
+# Modality-Biased Log-Bilinear Model 
+# + tanh activation
+# + learn language vector
+# + append language vector to context layer
+# + context = 2 on left, 2 on right
+# + INS symbol in the middle
+####################
+### English
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context_loanwords
+lang=en
+
+./train_mplm_context.py --lang_list ${lang} --batch_size 20 --save_network \
+                --network_dir ${network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### Epoch 97 Perplexity 3.18239643146
+
+### Test on English
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/97 \
+  --lang_list ${lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${lang}
+### Output
+# Dev cost mean: 1.67011 perplexity: 3.18239643146
+# Test cost mean: 1.66123 perplexity: 3.16285144456
+
+
+####################################################################################################
+### Swahili--Arabic
+# tmux2
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context_loanwords
+src_lang=sw
+tgt_lang=ar
+lang=${src_lang}_${tgt_lang}
+
+./train_mplm_context.py --lang_list ${lang} --batch_size 40 --save_network \
+                --network_dir ${network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### 
+
+
+### Test on Swahili
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/? \
+  --lang_list ${src_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${src_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${src_lang}
+### Output
+# 
+# 
+
+
+### Test on Arabic
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/? \
+  --lang_list ${tgt_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${tgt_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${tgt_lang}
+### Output
+# 
+
+####################################################################################################
+### Romanian--French
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context_loanwords
+src_lang=ro
+tgt_lang=fr
+lang=${src_lang}_${tgt_lang}
+
+./train_mplm_context.py --lang_list ${lang} --batch_size 40 --save_network \
+                --network_dir ${network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### Epoch 99 Perplexity 2.6179886597
+
+### Test on Romanian
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/99 \
+  --lang_list ${src_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${src_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${src_lang}
+### Output
+# Dev cost mean: 1.11468 perplexity: 2.16547516694
+# Test cost mean: 1.11249 perplexity: 2.16218352739
+
+### Test on French
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/99 \
+  --lang_list ${tgt_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${tgt_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${tgt_lang}
+### Output
+# Dev cost mean: 2.11637 perplexity: 4.33602209569
+# Test cost mean: 2.11914 perplexity: 4.34435301897
+
+####################################################################################################
+### Maltese--Italian
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context_loanwords
+src_lang=mt
+tgt_lang=it
+lang=${src_lang}_${tgt_lang}
+
+./train_mplm_context.py --lang_list ${lang} --batch_size 40 --save_network \
+                --network_dir ${network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### 
+
+
+### Test on Maltese
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/100 \
+  --lang_list ${src_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${src_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${src_lang}
+### Output
+# Dev cost mean: 1.50468 perplexity: 2.83761145093
+# Test cost mean: 1.51421 perplexity: 2.85641754785
+
+
+### Test on Italian
+./test_mplm_context.py --network_dir ${network_dir}/${lang}/100 \
+  --lang_list ${tgt_lang} --dev_path /usr1/home/ytsvetko/projects/mnlm/data/pron/dev/pron-dict.${tgt_lang} \
+  --test_path /usr1/home/ytsvetko/projects/mnlm/data/pron/test/pron-dict.${tgt_lang}
+### Output
+#Dev cost mean: 1.62011 perplexity: 3.07399014177
+# Test cost mean: 1.62617 perplexity: 3.08692237478
+
+
+
+####################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################################################################################################
+
+# ####################
+# LOANWORDS Scoring Model 
+# ####################
+
+####################################################################################################
+### Swahili--Arabic
+# tmux6, tmux1
+src_lang=sw
+tgt_lang=ar
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_loanwords
+lang=${src_lang}_${tgt_lang}
+init_network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context_loanwords/${lang}/46
+loanwords_training=/usr1/home/ytsvetko/projects/mnlm/data/loanwords/${src_lang}-${tgt_lang}/train.en-${src_lang}-${tgt_lang}
+loanwords_test=/usr1/home/ytsvetko/projects/mnlm/data/loanwords/${src_lang}-${tgt_lang}/test.en-${src_lang}-${tgt_lang}
+src_pronunciations=/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.${src_lang}
+tgt_pronunciations=/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.${tgt_lang}
+test_output_file=/usr1/home/ytsvetko/projects/mnlm/data/loanwords/${src_lang}-${tgt_lang}/${lang}_nbest.out
+
+./train_mplm_loanwords.py --loanwords_training ${loanwords_training} \
+       --src_lang ${src_lang} --tgt_lang ${tgt_lang} \
+       --src_pronunciations ${src_pronunciations} --tgt_pronunciations ${tgt_pronunciations} \
+       --batch_size 40 --save_network --network_dir ${network_dir} \
+       --load_network --load_network_dir ${init_network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### 
+
+
+### Test on Swahili
+./test_mplm_loanwords.py --loanwords_test ${loanwords_test} \
+       --src_lang ${src_lang} --tgt_lang ${tgt_lang} \
+       --load_network_dir ${network_dir}/${lang}/99 \
+       --output_file ${test_output_file}
+### Output
+# 
+#Gahl!! {:
+####################################################################################################
+### Romanian--French
+# tmux3
+src_lang=ro
+tgt_lang=fr
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_loanwords
+lang=${src_lang}_${tgt_lang}
+init_network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context_loanwords/${lang}/99
+loanwords_training=/usr1/home/ytsvetko/projects/mnlm/data/loanwords/${src_lang}-${tgt_lang}/train.en-${src_lang}-${tgt_lang}
+loanwords_test=/usr1/home/ytsvetko/projects/mnlm/data/loanwords/${src_lang}-${tgt_lang}/test.en-${src_lang}-${tgt_lang}
+src_pronunciations=/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.${src_lang}
+tgt_pronunciations=/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.${tgt_lang}
+test_output_file=${network_dir}/${lang}_nbest.out
+
+./train_mplm_loanwords.py --loanwords_training ${loanwords_training} \
+       --src_lang ${src_lang} --tgt_lang ${tgt_lang} \
+       --src_pronunciations ${src_pronunciations} --tgt_pronunciations ${tgt_pronunciations} \
+       --batch_size 40 --save_network --network_dir ${network_dir} \
+       --load_network --load_network_dir ${init_network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### 
+
+### Test on Romanian
+./test_mplm_loanwords.py --loanwords_test ${loanwords_test} \
+       --src_lang ${src_lang} --tgt_lang ${tgt_lang} \
+       --load_network_dir ${network_dir}/${lang}/50 \
+       --output_file ${test_output_file}
+
+
+####################################################################################################
+### Maltese--Italian
+# tmux5
+src_lang=mt
+tgt_lang=it
+network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_loanwords
+lang=${src_lang}_${tgt_lang}
+init_network_dir=/usr1/home/ytsvetko/projects/mnlm/work/mplm_context_loanwords/${lang}/99
+loanwords_training=/usr1/home/ytsvetko/projects/mnlm/data/loanwords/${src_lang}-${tgt_lang}/train.en-${src_lang}-${tgt_lang}
+loanwords_test=/usr1/home/ytsvetko/projects/mnlm/data/loanwords/${src_lang}-${tgt_lang}/test.en-${src_lang}-${tgt_lang}
+src_pronunciations=/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.${src_lang}
+tgt_pronunciations=/usr1/home/ytsvetko/projects/mnlm/data/pron/pron-dict.${tgt_lang}
+test_output_file=${network_dir}/${lang}_nbest.out
+
+./train_mplm_loanwords.py --loanwords_training ${loanwords_training} \
+       --src_lang ${src_lang} --tgt_lang ${tgt_lang} \
+       --src_pronunciations ${src_pronunciations} --tgt_pronunciations ${tgt_pronunciations} \
+       --batch_size 40 --save_network --network_dir ${network_dir} \
+       --load_network --load_network_dir ${init_network_dir} 2>&1 | tee ${network_dir}/${lang}.log
+
+
+./best_system.py --log_file  ${network_dir}/${lang}.log
+### 
+
+
+### Test on Maltese
+./test_mplm_loanwords.py --loanwords_test ${loanwords_test} \
+       --src_lang ${src_lang} --tgt_lang ${tgt_lang} \
+       --load_network_dir ${network_dir}/${lang}/49 \
+       --output_file ${test_output_file}
+
+
+####################################################################################################
+
+
+
 
 
 
