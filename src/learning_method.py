@@ -1,27 +1,30 @@
-from collections import OrderedDict
+"""
+Implemented by Guillaume Lample
 
-import numpy
+https://github.com/glample/UltraDeep/blob/master/learning_method.py
+"""
+import numpy as np
 import theano
 import theano.tensor as T
-from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
-from sklearn.utils import shuffle
 
-rng = numpy.random.RandomState(2016)
+floatX = theano.config.floatX
+device = theano.config.device
 
-def sharedX(X, dtype="float32"):
-    return theano.shared(numpy.asarray(X, dtype=dtype))
 
 def sgd(cost, params, lr=0.01):
-  """
-  Stochatic gradient descent.
-  """
-  lr = sharedX(lr)
-  
-  gradients = T.grad(cost, params)
-  updates = OrderedDict()
-  for p, g in zip(params, gradients):
-    updates[p] = p - lr * g
-  return updates
+    """
+    Stochatic gradient descent.
+    """
+    lr = theano.shared(np.float32(lr).astype(floatX))
+
+    gradients = T.grad(cost, params)
+
+    updates = []
+    for p, g in zip(params, gradients):
+        updates.append((p, p - lr * g))
+
+    return updates
+
 
 def sgdmomentum(cost, params, lr=0.01, momentum=0.9):
     """
@@ -58,7 +61,7 @@ def adagrad(cost, params, lr=1.0, epsilon=1e-6):
     for param, gradient, gsum in zip(params, gradients, gsums):
         new_gsum = gsum + gradient ** 2.
         updates.append((gsum, new_gsum))
-        updates.append((param, param - lr * gradient / ( T.sqrt(new_gsum + epsilon) )))
+        updates.append((param, param - lr * gradient / (T.sqrt(new_gsum + epsilon))))
     return updates
 
 
@@ -70,8 +73,18 @@ def adadelta(cost, params, rho=0.95, epsilon=1e-6):
     epsilon = theano.shared(np.float32(epsilon).astype(floatX))
 
     gradients = T.grad(cost, params)
-    accu_gradients = [theano.shared(np.zeros_like(param.get_value(borrow=True)).astype(floatX)) for param in params]
-    accu_deltas = [theano.shared(np.zeros_like(param.get_value(borrow=True)).astype(floatX)) for param in params]
+    accu_gradients = [
+        theano.shared(
+            np.zeros_like(param.get_value(borrow=True)).astype(floatX)
+        )
+        for param in params
+    ]
+    accu_deltas = [
+        theano.shared(
+            np.zeros_like(param.get_value(borrow=True)).astype(floatX)
+        )
+        for param in params
+    ]
 
     updates = []
     for param, gradient, accu_gradient, accu_delta in zip(params, gradients, accu_gradients, accu_deltas):
@@ -84,7 +97,31 @@ def adadelta(cost, params, rho=0.95, epsilon=1e-6):
     return updates
 
 
-if __name__ == "__main__":
-  print "This is a library!"
+def adam(cost, params, lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
+    """
+    Adam. Based on http://arxiv.org/pdf/1412.6980v4.pdf
+    """
+    updates = []
+    gradients = T.grad(cost, params)
 
+    t = theano.shared(np.float32(1.).astype(floatX))
 
+    for param, gradient in zip(params, gradients):
+        value = param.get_value(borrow=True)
+        m_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+        v_prev = theano.shared(np.zeros(value.shape, dtype=value.dtype),
+                               broadcastable=param.broadcastable)
+
+        m = beta1 * m_prev + (1. - beta1) * gradient
+        v = beta2 * v_prev + (1. - beta2) * gradient ** 2.
+        m_hat = m / (1. - beta1 ** t)
+        v_hat = v / (1. - beta2 ** t)
+        theta = param - (lr * m_hat) / (T.sqrt(v_hat) + epsilon)
+
+        updates.append((m_prev, m))
+        updates.append((v_prev, v))
+        updates.append((param, theta))
+
+    updates.append((t, t + 1.))
+    return updates

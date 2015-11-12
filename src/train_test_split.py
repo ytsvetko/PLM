@@ -22,9 +22,17 @@ def main():
   train_file = open(os.path.join(args.out_train_dir, filename), "w")
   dev_file = open(os.path.join(args.out_dev_dir, filename), "w")
   for line in open(args.in_corpus_file):
+    if " ||| " not in line:
+      tokens = line.split()
+      if len(tokens) < 1: 
+        continue
+      line = [tokens[0], "|||"]
+      line.extend(tokens[1:])
+      line = " ".join(line) + "\n"
     tokens = line.split(" ||| ")
     if len(tokens) != 2: 
       continue
+
     pronunciation = tokens[1]
     if random.random() < args.dev_ratio:
       dev_file.write(pronunciation)

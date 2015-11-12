@@ -20,10 +20,10 @@ parser.add_argument('--dev_path', default="/usr1/home/ytsvetko/projects/mnlm/dat
 parser.add_argument('--vector_size', type=int, default=100)
 parser.add_argument('--context_size', type=int, default=2) # 2 on left, 2 on right
 parser.add_argument('--batch_size', type=int, default=100)
-parser.add_argument('--num_epochs', type=int, default=100)
+parser.add_argument('--num_epochs', type=int, default=50)
 parser.add_argument('--network_dir', default="/usr1/home/ytsvetko/projects/mnlm/work/mlbl_b_learn_lang")
 parser.add_argument('--out_vectors', default="vectors")
-parser.add_argument('--load_network', action='store_true', default=False)
+parser.add_argument('--load_network_dir')
 parser.add_argument('--save_network', action='store_true', default=False)
 parser.add_argument('--symbol_table', default="/usr1/home/ytsvetko/projects/mnlm/work/symbol_table.en_ru_fr_ro_it_mt_sw_hi_ar")
 args = parser.parse_args()
@@ -103,8 +103,8 @@ def main():
 
   all_lang_symbol_indexes = GetLanguageList(args.symbol_table.split(".")[-1].split("_"), symbol_table)
   network = mplm.MNLM(symbol_table.Size(), args.vector_size, 2+args.context_size*2, all_lang_symbol_indexes)
-  if args.load_network:
-    network.LoadModel(args.network_dir)
+  if args.load_network_dir:
+    network.LoadModel(args.load_network_dir)
   print "Training"
   prev_train_ppl = 100
   prev_dev_ppl = 100

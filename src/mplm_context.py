@@ -35,7 +35,9 @@ class MNLM(object):
           layer.Linear(input_size*vector_size, vector_size),
           layer.Activation(T.tanh),
           layer.Concatenation(self.lang_indexes, embeddings_layer),  # Must be after tanh layer.
-          layer.Linear(2 * vector_size, vocab_size, scale=0.08), 
+          layer.Linear(2 * vector_size, vector_size, scale=0.08), 
+          layer.Activation(T.tanh),
+          layer.Linear(vector_size, vocab_size, scale=0.08), 
           layer.Activation(T.nnet.softmax),
         ]
 
@@ -64,7 +66,7 @@ class MNLM(object):
   def TrainEpoch(self, train_x, train_y, train_lang_indexes, batch_size, lr=0.01):
     train_lang_indexes = self.ConvertLangIndexes(train_lang_indexes)
     ## Define update graph
-    updates = learning_method.sgd(self.cost_fn, self.params, lr=lr) 
+    updates = learning_method.adam(self.cost_fn, self.params) 
 
     ## Compile Function
     train = theano.function(inputs=[self.x, self.t, self.lang_indexes],
