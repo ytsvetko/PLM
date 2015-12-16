@@ -1,2 +1,2 @@
-# mnlm
-multilingual phonological neural language models
+# PLM: Polyglot Language Models
+phonological neural language models for an unbounded number of languages
