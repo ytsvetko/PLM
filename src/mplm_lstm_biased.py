@@ -4,7 +4,7 @@ Multimodal Neural Language Models
 """
 from __future__ import division
 
-import os
+import os, sys
 import cPickle
 import numpy
 import theano
@@ -18,26 +18,31 @@ import math
 import layer
 import learning_method
 
+def flatten(l):
+  return numpy.array([item for sublist in l for item in sublist])  
+
 class MNLM(object):
   def __init__(self, vocab_size, vector_size, input_size, all_lang_symbol_indexes):
     # key = language symbol index, value = index in the all_lang_symbol_indexes list.
     self.lang_index_dict = {lang_ind: i for i, lang_ind in enumerate(all_lang_symbol_indexes)}
     self.vectors = numpy.zeros([vocab_size, vector_size])  # Current vectors
 
+    print "vocab_size:", vocab_size
+    print "vector_size:", vector_size
+    print "input_size:", input_size
+
     self.x = T.imatrix("x")
-    self.lang_bias = T.matrix("lang_bias")
     self.t = T.ivector("t")
     self.lang_indexes = T.ivector("lang_indexes")
+    self.lang_vec = T.fmatrix("lang_vec")
 
-    embeddings_layer = layer.Embeddings(vocab_size, vector_size, scale=0.08)
     self.layers = [
-          embeddings_layer,
-          layer.Linear(input_size*vector_size, vector_size),
+          layer.Embeddings(vocab_size, vector_size, scale=0.08),
+          layer.Linear_Biased(input_size*vector_size, vector_size, self.lang_vec),
           layer.Activation(T.tanh),
-          layer.Concatenation(self.lang_indexes, embeddings_layer),  # Must be after tanh layer.
-          layer.Linear(2 * vector_size, vector_size, scale=0.08), 
-          layer.Activation(T.tanh),
-          layer.Linear(vector_size, vocab_size, scale=0.08), 
+          layer.LSTM(vector_size, vector_size),                
+          layer.DropoutLayer(),
+          layer.Linear(vector_size, vocab_size), 
           layer.Activation(T.nnet.softmax),
         ]
 
@@ -56,30 +61,48 @@ class MNLM(object):
     ## Collect Parameters
     self.params = self.GetParams_()
 
-    self.test = theano.function(inputs=[self.x, self.t, self.lang_indexes], outputs=self.cost_fn,
+    self.test = theano.function(inputs=[self.x, self.t, self.lang_indexes, self.lang_vec], outputs=self.cost_fn,
                                 allow_input_downcast=True, on_unused_input='ignore')
 
-    self.loanword_log_prob = theano.function(inputs=[self.x, self.t, self.lang_indexes],
+    self.loanword_log_prob = theano.function(inputs=[self.x, self.t, self.lang_indexes, self.lang_vec],
                                              outputs=self.log_prob_of_labels,
                                              allow_input_downcast=True, on_unused_input='ignore')
 
-  def TrainEpoch(self, train_x, train_y, train_lang_indexes, batch_size, lr=0.01):
+  def TrainEpoch(self, train_x, train_y, train_lang_indexes, lang_vec, batch_size, lr=0.01, to_shuffle=True):
+    needs_flatten = type(train_x) == list
+    assert len(train_x) == len(train_y) and len(train_y) == len(train_lang_indexes)
+    assert len(lang_vec) == len(train_y)
+      
+    # Shuffle samples
+    if to_shuffle:
+      train_x, train_y, train_lang_indexes, lang_vec = shuffle(train_x, train_y, train_lang_indexes, lang_vec)
+    assert len(train_x) == len(train_y) and len(train_y) == len(train_lang_indexes)
+    assert len(lang_vec) == len(train_y)
+
+    if needs_flatten:
+      print len(train_x)
+      train_x = flatten(list(train_x))
+      print len(train_y)
+      train_y = flatten(list(train_y))
+      train_lang_indexes = flatten(list(train_lang_indexes))
+      lang_vec = flatten(list(lang_vec))
+
     train_lang_indexes = self.ConvertLangIndexes(train_lang_indexes)
+    
     ## Define update graph
     updates = learning_method.adam(self.cost_fn, self.params) 
 
     ## Compile Function
-    train = theano.function(inputs=[self.x, self.t, self.lang_indexes],
+    train = theano.function(inputs=[self.x, self.t, self.lang_indexes, self.lang_vec],
                             outputs=self.cost_fn, updates=updates, 
                             allow_input_downcast=True, on_unused_input='ignore')
     nbatches = int(math.ceil(train_x.shape[0]/batch_size))
-    # Shuffle samples
-    train_x, train_y, train_lang_indexes = shuffle(train_x, train_y, train_lang_indexes)
+
     train_costs = []
     for i in range(nbatches):
       start = i * batch_size
       end = min(start + batch_size, train_x.shape[0])
-      cost = train(train_x[start:end], train_y[start:end], train_lang_indexes[start:end])
+      cost = train(train_x[start:end], train_y[start:end], train_lang_indexes[start:end], lang_vec[start:end])
       train_costs.append(cost)
       self.UpdateVectors_()
       if i % 1000 == 0:
@@ -88,14 +111,19 @@ class MNLM(object):
     train_ppl = numpy.power(2.0, train_logp)
     return train_logp, train_ppl
 
-  def Test(self, x, y, lang_indexes, batch_size=100):
+  def Test(self, x, y, lang_indexes, lang_vec, batch_size=100):
+    if type(x) == list:
+      x = flatten(x)
+      y = flatten(y)
+      lang_indexes = flatten(lang_indexes)
+      lang_vec = flatten(lang_vec)
     lang_indexes = self.ConvertLangIndexes(lang_indexes)
     nbatches = int(math.ceil(x.shape[0]/batch_size))
     test_costs = []
     for i in range(nbatches):
       start = i * batch_size
       end = min(start + batch_size, x.shape[0])
-      cost = self.test(x[start:end], y[start:end], lang_indexes[start:end])
+      cost = self.test(x[start:end], y[start:end], lang_indexes[start:end], lang_vec[start:end])
       test_costs.append(cost)
       if i % 1000 == 0:
         print "Eval batch {}, cost: {}".format(i, cost)
@@ -103,14 +131,14 @@ class MNLM(object):
     test_ppl = numpy.power(2.0, test_logp)
     return test_logp, test_ppl
  
-  def LogProb(self, x, y, lang_indexes, batch_size=100):
+  def LogProb(self, x, y, lang_indexes, lang_vec, batch_size=100):
     lang_indexes = self.ConvertLangIndexes(lang_indexes)
     nbatches = int(math.ceil(x.shape[0]/batch_size))
     log_probs = []
     for i in range(nbatches):
       start = i * batch_size
       end = min(start + batch_size, x.shape[0])
-      log_prob_vector = self.loanword_log_prob(x[start:end], y[start:end], lang_indexes[start:end])
+      log_prob_vector = self.loanword_log_prob(x[start:end], y[start:end], lang_indexes[start:end], lang_vec[start:end])
       log_probs.extend(log_prob_vector)
       if i % 1000 == 0:
         print "Eval batch {}".format(i)
