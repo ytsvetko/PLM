@@ -59,6 +59,35 @@ class Attention(object):
     # result.shape = (batch_size, 2 x vector_size)
     return T.concatenate([tanh_result, weighted_sum], axis=1)
   
+class Language_Factored(object):
+  def __init__(self, vis_dim, hid_dim, lang_vec, lang_dim=20, lang_activation=T.tanh, scale=0.08):
+    self.lang_vec = lang_vec
+    self.L = sharedX(rng.randn(186, lang_dim) * scale, name="Language_Factored.L") # dimension reduction for linguistic vector
+    self.l_b = sharedX(numpy.zeros(lang_dim,), name="Language_Factored.l_b")
+
+    # ouput vector is factored by language features and then reshaped to vis_dim*lang_dim
+    self.W = sharedX(rng.randn(vis_dim*lang_dim, hid_dim) * scale, name="Language_Factored.W")
+    self.b = sharedX(numpy.zeros(hid_dim,), name="Language_Factored.b")
+
+    self.params = [ self.L, self.l_b, self.W, self.b ]
+    self.lang_activation = lang_activation
+    self.vis_dim = vis_dim
+    self.lang_dim = lang_dim
+
+  def fprop(self, x, bias=None):
+    # x.shape = (batch_size, vector_size)
+    # self.lang_vec.shape = (batch_size, self.lang_dim)
+    
+    x1 = x.reshape((x.shape[0], x.shape[1], 1))
+    h_lang = self.lang_activation(T.dot(self.lang_vec, self.L)+self.l_b)
+    h_lang1 = h_lang.reshape((h_lang.shape[0], 1, h_lang.shape[1]))
+    
+    # h_lang_factored.shape = (batch_size, vector_size, self.lang_dim)
+    h_lang_factored = T.batched_dot(x1, h_lang1)
+    h_lang_factored_vector = h_lang_factored.reshape((x.shape[0], (self.vis_dim * self.lang_dim)))
+    h = T.dot(h_lang_factored_vector, self.W)+self.b
+    return h
+  
 class Linear:
   def __init__(self, vis_dim, hid_dim, scale=0.08):
     self.W = sharedX(rng.randn(vis_dim, hid_dim) * scale, name="Linear.W")
